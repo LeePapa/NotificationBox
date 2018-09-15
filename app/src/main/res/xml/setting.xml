@@ -24,7 +24,7 @@
 
         <android.support.v7.preference.PreferenceScreen
             android:key="openSource"
-            android:summary="Power by GavinLiu"
+            android:summary="Power by GavinLiu and Tumuyan"
             android:title="@string/open_source"
             android:widgetLayout="@layout/nb_preference_screen"/>
 

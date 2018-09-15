@@ -15,7 +15,7 @@ public class AppListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_applist);
+        setContentView(R.layout.activity_applist2);
 
         AppListFragment appListFragment = (AppListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_applist);

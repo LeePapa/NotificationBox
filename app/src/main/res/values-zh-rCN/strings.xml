@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">消息盒子</string>
+    <string name="app_name">通知过滤</string>
     <string name="service_name">消息监听服务</string>
 
     <string name="activity_applist">软件列表</string>
@@ -20,5 +20,17 @@
     <string name="empty_detail">还未拦截到该软件的通知消息</string>
 
     <string name="notify_blocking">拦截: %1$s</string>
+    <string name="add_info">需开机自启并列于后台白名单，还是不行就重启试试。\n
+        内容过滤器有限地支持正则匹配。1行为1条匹配规则。\n
+        存在规则时，只有符合规则的消息才会被屏蔽。算法：\n
+        message=(推送标题+推送内容).replaceAll(\"\\n\",\"\");\n
+        rules[]=rule.split(\"\\n\");\n
+        result=Pattern.matches(rules[i], message)\n
+        屏蔽规则范例：推送标题：阿右  推送消息：GN\n
+        完全匹配的规则：阿右GN 匹配标题的规则：阿右.* 匹配消息的规则：.*GN
+        \n建议在规则的前后方都无脑写通配符.*以增加匹配能力</string>
+    <string name="add_hint">1行为1条黑名单，有限地支持正则</string>
+
+
 
 </resources>

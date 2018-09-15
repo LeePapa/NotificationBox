@@ -20,5 +20,13 @@
     <string name="empty_detail">The notification message to the app has not yet been intercepted</string>
 
     <string name="notify_blocking">Intercept: %1$s</string>
+    <string name="add_info"> Please make sure that the application has the  RECEIVE_BOOT_COMPLETED permission and been listed in the background whitelist.\n
+        If the software is not effective, please try to reboot the meachine.\n
+        The text filter runs as follows:\n
+        Message= (push title + push content).ReplaceAll ("\n", "");
+        Rules[]=rule.split ("\n"); Result=Pattern.matches (rules[i], message)\n
+        For example -- Push Title:Mr.Right  push message:GN\n
+        Right rules:Mr.RightGN  Mr.Right.*  Mr.*  .*GN  .*GN.*    </string>
+    <string name="add_hint">Each row is a blacklist, with limited support for regular expressions</string>
 
 </resources>

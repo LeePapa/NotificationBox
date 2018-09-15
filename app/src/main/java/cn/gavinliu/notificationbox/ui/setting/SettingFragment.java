@@ -37,7 +37,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent();
                 intent.setAction("android.intent.action.VIEW");
-                intent.setData(Uri.parse("https://github.com/gavinliu/NotificationBox"));
+                intent.setData(Uri.parse("https://github.com/tumuyan/NotificationBox"));
                 startActivity(intent);
                 return true;
             }

@@ -14,7 +14,7 @@
 
     </FrameLayout>
 
-
+<!--
     <LinearLayout
         android:id="@+id/viewMessageBlackList"
         android:layout_width="match_parent"
@@ -49,5 +49,5 @@
             android:layout_margin="4dp"
             android:background="@color/colorPrimaryDark"
             android:text="Save" />
-    </LinearLayout>
+    </LinearLayout>-->
 </FrameLayout>

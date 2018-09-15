@@ -9,4 +9,12 @@
         android:layout_height="match_parent"
         android:tag="SettingFragment"/>
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:padding="12dp"
+        android:text="@string/add_info" />
+
 </FrameLayout>
