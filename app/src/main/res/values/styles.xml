@@ -34,7 +34,8 @@
     <style name="AppTheme.TextAppearanceMidX">
         <item name="android:textSize">14sp</item>
         <item name="android:background">@color/colorPrimary</item>
-
+        <item name="android:textColorHint">#FFCCCCCC</item>
+        <item name="android:textColorPrimary">#ffffffff</item>
         <item name="android:textColor">#FFFFFFFF</item>
     </style>
 

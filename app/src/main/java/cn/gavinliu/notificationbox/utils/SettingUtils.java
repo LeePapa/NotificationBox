@@ -35,4 +35,8 @@ public class SettingUtils {
     public boolean isNotify() {
         return mPreference.getBoolean("isNotify", false);
     }
+
+    public boolean isRecordAll() {
+        return mPreference.getBoolean("isRecordAll", false);
+    }
 }

@@ -1,24 +1,19 @@
 <resources>
     <string name="app_name">NotificationBox</string>
     <string name="service_name">Notification Listener Service</string>
-
     <string name="activity_applist">App List</string>
-
     <string name="action_settings">Settings</string>
-
     <string name="feature">Feature</string>
     <string name="about">About</string>
     <string name="open_source">OpenSource</string>
+    <string name="based_on">Based on</string>
     <string name="reminder">Intercept reminder</string>
     <string name="reminder_summary">Intercept notification after the reminder</string>
     <string name="permission">Set permissions</string>
     <string name="permission_summary">If the blocking is disabled, reset the permissions</string>
-
     <string name="no_read_notification_promission">No read notification permissions</string>
-
     <string name="empty_app">Click on the lower right corner of the button, add the blocking App</string>
     <string name="empty_detail">The notification message to the app has not yet been intercepted</string>
-
     <string name="notify_blocking">Intercept: %1$s</string>
     <string name="add_info"> Please make sure that the application has the  RECEIVE_BOOT_COMPLETED permission and been listed in the background whitelist.\n
         If the software is not effective, please try to reboot the meachine.\n
@@ -28,5 +23,16 @@
         For example -- Push Title:Mr.Right  push message:GN\n
         Right rules:Mr.RightGN  Mr.Right.*  Mr.*  .*GN  .*GN.*    </string>
     <string name="add_hint">Each row is a blacklist, with limited support for regular expressions</string>
+    <string name="split_title_1">Permission</string>
+    <string name="split_title_2">Matches Function</string>
+    <string name="split_title_3">Sample Rules</string>
+    <string name="split_info_1">Please make sure that the application has the auto run permission and been listed in the background whitelist.\n
+        If the software is not effective, please try to reboot the meachine.</string>
+    <string name="split_info_2">Message= (push title + push content).ReplaceAll (\"\\n\", \"\");         Rules[]=rule.split (\"\\n\"); Result=Pattern.matches (rules[i], message)</string>
+    <string name="split_info_3">Push Title:Mr.Right  push message:GN\\n         Right rules:Mr.RightGN  Mr.Right.*  Mr.*  .*GN  .*GN.*</string>
+    <string name="Record_all">Record all notifications</string>
+    <string name="Record_all_detail">Record unselected application notification.</string>
+    <string name="query_hint1">Title</string>
+    <string name="query_hint2">Content</string>
 
 </resources>

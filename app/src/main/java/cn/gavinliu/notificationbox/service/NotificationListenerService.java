@@ -11,6 +11,7 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -29,6 +30,7 @@ import cn.gavinliu.notificationbox.utils.SettingUtils;
 public class NotificationListenerService extends android.service.notification.NotificationListenerService {
 
     private static final String TAG = "NLS";
+    int flag=0;// flag是匹配消息的结果；0代表未匹配到，1 包名匹配但消息内容不匹配；2通过包名屏蔽；3通过消息内容屏蔽
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -65,6 +67,7 @@ public class NotificationListenerService extends android.service.notification.No
         super.onNotificationPosted(sbn);
         Log.i(TAG, "onNotificationPosted");
 
+
         Notification notification = sbn.getNotification();
 
         String packageName = sbn.getPackageName();
@@ -72,32 +75,40 @@ public class NotificationListenerService extends android.service.notification.No
         String title = notification.extras.getString(Notification.EXTRA_TITLE);
         String text = notification.extras.getString(Notification.EXTRA_TEXT);
 
-        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
-        List<AppInfo> blackList = DbUtils.getApp();
+//        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
 
-        for (AppInfo app : blackList) {
-            if (packageName.equals(app.getPackageName())) {
-                Log.w(TAG, packageName + " 拦截：" + title + ": " + text);
 
-                if(matchsMessage(packageName,(title+"\n"+text).replaceAll("\n",""))) {
-                    Log.e("Hide",packageName);
-                    if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
-                        cancelNotification(sbn.getKey());
-                    } else {
-                        cancelNotification(sbn.getPackageName(), sbn.getTag(), sbn.getId());
+                List<AppInfo> blackList = DbUtils.getApp();
+
+                for (AppInfo app : blackList) {
+
+                    if (packageName.equals(app.getPackageName())) {
+                        flag=1;
+                        Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
+
+                        if(matchsMessage(packageName,(title+"\n"+text).replaceAll("\n",""))) {
+                            // flag=2或3;
+                            if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+                                cancelNotification(sbn.getKey());
+                            } else {
+                                cancelNotification(sbn.getPackageName(), sbn.getTag(), sbn.getId());
+                            }
+
+                            if (SettingUtils.getInstance().isNotify()) {
+                                createNotification(app.getAppName(), packageName, title, text);
+                            }
+                        }
                     }
-
-                    if (SettingUtils.getInstance().isNotify()) {
-                        createNotification(app.getAppName(), packageName, title, text);
-                    }
-                }else{
-                    Log.e("Exit",packageName);
                 }
 
-            //    Log.w("End",packageName);
+                if(null==text){text="";}
 
-            }
-        }
+                if( text.replaceAll("\\s", "").length() == 0 && title.length()>14) {
+                    text = "> " + title;
+                }
+
+        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
+                flag=0;
     }
 
     @Override
@@ -133,13 +144,18 @@ public class NotificationListenerService extends android.service.notification.No
     public Boolean matchsMessage(String packageName,String message){
         Boolean result=false;
         String[] blacklist=getSetting(packageName);
-        if(null!=blacklist){
+        if(null==blacklist){
+            flag=2;
+            Log.i("MatchMessage","Null list");
+            result=true;
+        }else {
             for(String black:blacklist){
                 if(Pattern.matches(black, message)){
                     //matches的规则是用正则表达式，必须完全匹配在字符串上；
                     result=true;
+                    flag=3;
                 }
-                Log.i(black,message+result);
+                Log.i("MatchMessage"+black,message+result);
             }
         }
     return  result;
@@ -147,19 +163,43 @@ public class NotificationListenerService extends android.service.notification.No
     }
 
 
-    public String[]  getSetting(String appName) {
+    private String[]  getSetting(String appName) {
         try{
-            Log.i("get",""+appName);
-            SharedPreferences read = getSharedPreferences("setting",MODE_PRIVATE);
+            Log.i("getting AppName",""+appName);
+    //        SharedPreferences read = getSharedPreferences("setting",MODE_PRIVATE);
+            SharedPreferences read = getSharedPreferences("setting",MODE_MULTI_PROCESS);
             String MessageBlackList = read.getString(appName, "");
+            Log.i("MesssageBlackList",""+MessageBlackList);
+            MessageBlackList=MessageBlackList. replaceAll("\n+","\n");
 
-            Log.i(appName+" rules:",MessageBlackList);
-            String[] result=MessageBlackList.split("\n");
-            return result;
+            if(MessageBlackList.length()==0 || MessageBlackList=="\n"){
+                return null;
+            }else{
+                Log.i(appName+" rules:",MessageBlackList);
+                String[] result=MessageBlackList.split("\n");
+                List<String> rule=new ArrayList<>();
+
+                    for(String cache:result){
+                        if(cache.length()!=0 && cache!="\n"){
+
+//                            if(Pattern.matches("^[\\u4e00-\\u9fa5_a-zA-Z0-9]+$",cache)){
+           //                 if(Pattern.matches("[\\u0021-\\u002F]",cache)){
+                            if(cache.replaceAll("[\\u0021-\\u002f\\u003a-\\u003f\\u005b-\\u0061\\u007b-\\u007e\\\\]+","").length()==cache.length()){
+                                    rule.add(".*"+cache.replaceAll("\\s",".*")+".*");
+
+                            }else{
+                                rule.add(cache);
+                            }
+
+
+                        }
+                    }
+
+                return rule.toArray(new String[rule.size()]);
+            }
         }catch(Exception e) {
             Log.i(appName,"error");
             e.printStackTrace();
-
         }
         return null;
     }

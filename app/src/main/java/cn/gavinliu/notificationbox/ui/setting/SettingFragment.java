@@ -42,5 +42,15 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+        findPreference("based_on").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.VIEW");
+                intent.setData(Uri.parse("https://github.com/gavinliu/NotificationBox"));
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 }

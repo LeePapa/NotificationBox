@@ -28,6 +28,8 @@ public class NotificationInfo {
 
     private long time;
 
+    private int flag=-1;
+
     @Ignore
     private Intent mIntent;
 
@@ -36,6 +38,21 @@ public class NotificationInfo {
         this.title = title;
         this.text = text;
         this.time = time;
+    }
+    // 根据初始化时输入内容不同，确定flag做不做初始化
+    public NotificationInfo(String packageName, String title, String text, long time,int flag) {
+        this.packageName = packageName;
+        this.title = title;
+        this.text = text;
+        this.time = time;
+        this.flag=flag;
+    }
+
+    public int getFlag(){
+        return flag;
+    }
+    public void setFlag(int flag){
+        this.flag=flag;
     }
 
     public int getId() {

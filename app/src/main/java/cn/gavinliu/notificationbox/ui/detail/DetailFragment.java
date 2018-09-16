@@ -1,6 +1,7 @@
 package cn.gavinliu.notificationbox.ui.detail;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -109,7 +110,7 @@ public class DetailFragment extends BaseListFragment implements DetailContract.V
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_detail, parent, false));
+            return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_detail2, parent, false));
         }
 
         @Override
@@ -118,6 +119,24 @@ public class DetailFragment extends BaseListFragment implements DetailContract.V
             holder.title.setText(notification.getTitle());
             holder.text.setText(notification.getText());
             holder.time.setText(CommonUtils.getTimeStr(notification.getTime()));
+            int flag=notification.getFlag();
+            switch (flag){
+                // 完全未匹配，白色，包名匹配但是放行，绿色  包名匹配命中 黄色（淡淡）   异常（红色
+                case 1:
+                    holder.bg.setBackgroundColor(Color.parseColor("#FFddffdd"));
+                    break;
+                case 2:
+                    holder.bg.setBackgroundColor(Color.parseColor("#FFF9FFC2"));
+                    break;
+                case 3:
+                    holder.bg.setBackgroundColor(Color.parseColor("#FFFFF0C2"));
+                    break;
+                case -1:
+                    holder.bg.setBackgroundColor(Color.parseColor("#FFffcccc"));
+                    break;
+                case 0:
+                    holder.bg.setBackgroundColor(Color.parseColor("#ffffffff"));
+            }
         }
 
         @Override
@@ -132,12 +151,14 @@ public class DetailFragment extends BaseListFragment implements DetailContract.V
         TextView title;
         TextView text;
         TextView time;
+        View bg;
 
         public ViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
             text = (TextView) itemView.findViewById(R.id.text);
             time = (TextView) itemView.findViewById(R.id.time);
+            bg=(View)itemView.findViewById(R.id.ViewDataItem);
         }
     }
 

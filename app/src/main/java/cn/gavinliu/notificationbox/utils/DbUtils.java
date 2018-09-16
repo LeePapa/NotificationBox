@@ -1,5 +1,7 @@
 package cn.gavinliu.notificationbox.utils;
 
+import android.util.Log;
+
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.litesuits.orm.db.assit.WhereBuilder;
 
@@ -19,10 +21,45 @@ public class DbUtils {
         if (info.getTitle() == null || info.getText() == null) return;
         NotificationBoxApp.getLiteOrm().save(info);
     }
+/*
 
     public static List<NotificationInfo> getNotification(String packageName) {
-        return NotificationBoxApp.getLiteOrm().query(new QueryBuilder<NotificationInfo>(NotificationInfo.class)
-                .where("packageName = ?", packageName).orderBy("time desc"));
+       //如果输入的packageName为空，则返回全部的数据
+        // Log.i("getNotification","runing"+packageName+"end");
+*//*        if(null==packageName){
+            Log.i("package","space1");
+            return NotificationBoxApp.getLiteOrm().query(new QueryBuilder<NotificationInfo>(NotificationInfo.class).orderBy("time desc"));
+        }else *//*if(4>packageName.length()){
+            Log.i("package","space2");
+            return NotificationBoxApp.getLiteOrm().query(new QueryBuilder<NotificationInfo>(NotificationInfo.class).orderBy("time desc"));
+        }else{
+            Log.i("package",""+packageName.length());
+            return NotificationBoxApp.getLiteOrm().query(new QueryBuilder<NotificationInfo>(NotificationInfo.class)
+                    .where("packageName = ?", packageName).orderBy("time desc"));
+        }
+    }
+
+ */   public static List<NotificationInfo> getNotification(String packageName,String qurey1,String qurey2) {
+
+
+
+        if(4>packageName.length()){
+
+            return NotificationBoxApp.getLiteOrm().query(new QueryBuilder<NotificationInfo>(NotificationInfo.class)
+                    .where("title LIKE ?", "%"+qurey1+"%")
+                    .whereAppendAnd()
+                    .whereAppend("text LIKE ?", "%"+qurey2+"%")
+                            .orderBy("time desc"));
+        }else{
+
+            return NotificationBoxApp.getLiteOrm().query(new QueryBuilder<NotificationInfo>(NotificationInfo.class)
+                    .where("packageName = ?", packageName)
+                    .whereAppendAnd()
+                    .whereAppend("title LIKE ?", "%"+qurey1+"%")
+                    .whereAppendAnd()
+                    .whereAppend("text LIKE ?", "%"+qurey2+"%")
+                    .orderBy("time desc"));
+        }
     }
 
     public static List<AppInfo> getApp() {

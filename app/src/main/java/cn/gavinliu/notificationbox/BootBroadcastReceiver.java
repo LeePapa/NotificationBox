@@ -29,7 +29,8 @@ public class BootBroadcastReceiver extends BroadcastReceiver{
             Log.d("onReceive:", "Boot system");
             Intent startIntent = new Intent(context, NotificationListenerService.class);
             startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(startIntent);
+        //    context.startActivity(startIntent);
+            context.startService(startIntent);
         }
     }
 

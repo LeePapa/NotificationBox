@@ -10,6 +10,18 @@
             android:key="isNotify"
             android:summary="@string/reminder_summary"
             android:title="@string/reminder"/>
+<!--
+        <android.support.v7.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="isRecordAll"
+            android:summary="@string/Record_all_detail"
+            android:title="@string/Record_all"/>
+
+        <android.support.v7.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="isShowdAll"
+            android:summary="@string/Show_all_detail"
+            android:title="@string/Show_all"/>-->
 
         <android.support.v7.preference.PreferenceScreen
             android:key="permission"
@@ -24,10 +36,46 @@
 
         <android.support.v7.preference.PreferenceScreen
             android:key="openSource"
-            android:summary="Power by GavinLiu and Tumuyan"
+            android:summary="Power by tumuyan"
             android:title="@string/open_source"
             android:widgetLayout="@layout/nb_preference_screen"/>
 
     </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceScreen
+
+        android:key="based_on"
+        android:summary="Power by GavinLiu"
+        android:title="@string/based_on"
+        android:widgetLayout="@layout/nb_preference_screen"/>
+
+
+<!--
+    <android.support.v7.preference.PreferenceScreen
+
+        android:key=""
+        android:summary="@string/add_info"
+        android:title=""
+        android:widgetLayout="@layout/nb_preference_info"/>
+-->
+
+    <android.support.v7.preference.PreferenceScreen
+
+        android:key=""
+        android:summary="@string/split_info_1"
+        android:title="@string/split_title_1"
+        android:widgetLayout="@layout/nb_preference_info"/>
+    <android.support.v7.preference.PreferenceScreen
+
+        android:key=""
+        android:summary="@string/split_info_2"
+        android:title="@string/split_title_2"
+        android:widgetLayout="@layout/nb_preference_info"/>
+    <android.support.v7.preference.PreferenceScreen
+
+        android:key=""
+        android:summary="@string/split_info_3"
+        android:title="@string/split_title_3"
+        android:widgetLayout="@layout/nb_preference_info"/>
 
 </android.support.v7.preference.PreferenceScreen>

@@ -7,4 +7,14 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_allrecords"
+        android:orderInCategory="100"
+        android:title="所有记录"
+        app:showAsAction="never"/>
+<!--    <item
+        android:id="@+id/action_startservice"
+        android:orderInCategory="100"
+        android:title="启动服务"
+        app:showAsAction="never"/>-->
 </menu>

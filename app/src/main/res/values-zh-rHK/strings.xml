@@ -9,6 +9,7 @@
     <string name="feature">功能</string>
     <string name="about">關於</string>
     <string name="open_source">開放源碼</string>
+    <string name="based_on">基於項目</string>
     <string name="reminder">攔截提醒</string>
     <string name="reminder_summary">攔截到消息後提醒</string>
     <string name="permission">配置權限</string>
@@ -29,5 +30,13 @@
         屏蔽規則範例：推送標題：阿右  推送消息：GN\n
         完全匹配的規則：阿右GN 匹配標題的規則：阿右.* 匹配消息的規則：.*GN
         \n建議在規則的前後方都無腦寫通配符.*以增加匹配能力</string>
-    <string name="add_hint">1行為1條黑名單，有限地支持正則</string>
+    <string name="add_hint">壹行內容即壹條匹配規則，有限地支持正則</string>
+    <string name="split_title_1">權限說明</string>
+    <string name="split_title_2">匹配算法</string>
+    <string name="split_title_3">規則範例</string>
+    <string name="split_info_1">需自啟權限，如果無效壹定是各種管家和系統設置的犄角旭旯的地方沒有給權限。\n內容過濾器有限地支持正則匹配，過濾器為空則會屏蔽該應用的全部消息。</string>
+    <string name="split_info_2">壹行內容即壹條匹配規則，符合規則的消息會被屏蔽。\n如包含英文符號識別規則為正則表達式；\n否則程序自動替換空格和制表符為".*"，按照正則方式匹配。</string>
+    <string name="split_info_3">推送標題：阿右，推送消息：GN\n
+        完全匹配的規則：阿右GN 匹配標題的規則：阿右.* 匹配消息的規則：.*GN
+        \n非正則規則：阿右 GN(自動轉換為.*阿右.*GN.*)</string>
 </resources>

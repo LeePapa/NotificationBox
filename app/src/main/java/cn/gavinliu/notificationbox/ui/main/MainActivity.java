@@ -7,12 +7,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import cn.gavinliu.notificationbox.R;
 import cn.gavinliu.notificationbox.service.NotificationListenerService;
+import cn.gavinliu.notificationbox.ui.detail.DetailActivity;
 import cn.gavinliu.notificationbox.ui.setting.SettingActivity;
 import cn.gavinliu.notificationbox.utils.CommonUtils;
 
@@ -82,6 +84,30 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
+        if (id == R.id.action_allrecords) {
+
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra("appName", "");
+            intent.putExtra("packageName", "");
+            startActivity(intent);
+
+ /*           Intent intent = new Intent(this, DetailActivity.class);
+            startActivity(intent);
+            return true;*/
+        }
+/*
+        if (id == R.id.action_startservice) {
+
+            Log.d("onClick:", "Start Service");
+            Intent startIntent = new Intent(this,cn.gavinliu.notificationbox.service.NotificationListenerService.class);
+         //   startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            this.startService(startIntent);
+        }
+
+
+*/
+
+
 
         return super.onOptionsItemSelected(item);
     }
