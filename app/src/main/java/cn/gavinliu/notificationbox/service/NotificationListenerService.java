@@ -143,62 +143,71 @@ public class NotificationListenerService extends android.service.notification.No
 
     public Boolean matchsMessage(String packageName,String message){
         Boolean result=false;
-        String[] blacklist=getSetting(packageName);
-        if(null==blacklist){
-            flag=2;
-            Log.i("MatchMessage","Null list");
-            result=true;
-        }else {
-            for(String black:blacklist){
-                if(Pattern.matches(black, message)){
-                    //matches的规则是用正则表达式，必须完全匹配在字符串上；
-                    result=true;
-                    flag=3;
-                }
-                Log.i("MatchMessage"+black,message+result);
+        SharedPreferences read = getSharedPreferences("setting",MODE_MULTI_PROCESS);
+        int mode=read.getInt("mode",0);
+
+        if(mode<0){
+            return false;
+        }else{
+            String MessageBlackList = read.getString(packageName, "");
+
+            if(mode>0){
+                MessageBlackList=MessageBlackList+"\n"+read.getString(packageName+"."+mode, "");
             }
+            Log.i(packageName+" rules:",MessageBlackList);
+            String[] blacklist=splitRulls(MessageBlackList);
+
+            if(null==blacklist){
+                flag=2;
+                Log.i("MatchMessage","Null list");
+                result=true;
+            }else {
+                for(String black:blacklist){
+                    if(Pattern.matches(black, message)){
+                        //matches的规则是用正则表达式，必须完全匹配在字符串上；
+                        result=true;
+                        flag=3;
+                    }
+                    Log.i("MatchMessage"+black,message+result);
+                }
+            }
+
         }
+
+
+
     return  result;
 
     }
 
 
-    private String[]  getSetting(String appName) {
+    private String[]  splitRulls(String MessageBlackList) {
         try{
-            Log.i("getting AppName",""+appName);
-    //        SharedPreferences read = getSharedPreferences("setting",MODE_PRIVATE);
-            SharedPreferences read = getSharedPreferences("setting",MODE_MULTI_PROCESS);
-            String MessageBlackList = read.getString(appName, "");
-            Log.i("MesssageBlackList",""+MessageBlackList);
+
             MessageBlackList=MessageBlackList. replaceAll("\n+","\n");
 
             if(MessageBlackList.length()==0 || MessageBlackList=="\n"){
                 return null;
             }else{
-                Log.i(appName+" rules:",MessageBlackList);
+
                 String[] result=MessageBlackList.split("\n");
                 List<String> rule=new ArrayList<>();
 
                     for(String cache:result){
                         if(cache.length()!=0 && cache!="\n"){
 
-//                            if(Pattern.matches("^[\\u4e00-\\u9fa5_a-zA-Z0-9]+$",cache)){
-           //                 if(Pattern.matches("[\\u0021-\\u002F]",cache)){
                             if(cache.replaceAll("[\\u0021-\\u002f\\u003a-\\u003f\\u005b-\\u0061\\u007b-\\u007e\\\\]+","").length()==cache.length()){
                                     rule.add(".*"+cache.replaceAll("\\s",".*")+".*");
-
                             }else{
                                 rule.add(cache);
                             }
-
-
                         }
                     }
 
                 return rule.toArray(new String[rule.size()]);
             }
         }catch(Exception e) {
-            Log.i(appName,"error");
+            Log.i("Split","error");
             e.printStackTrace();
         }
         return null;

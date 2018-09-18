@@ -2,16 +2,43 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="cn.gavinliu.notificationbox.ui.main.MainActivity">
+    <group
+        android:id="@+id/group_mode"
+        android:checkableBehavior="single">
+        <item android:id="@+id/mode__1"
+            android:title="@string/mode__1"/>
+        <item android:id="@+id/mode_0"
+            android:title="@string/mode_0"/>
+        <item android:id="@+id/mode_1"
+            android:title="@string/mode_1" />
+        <item android:id="@+id/mode_2"
+            android:title="@string/mode_2" />
+    </group>
+
+    <item
+        android:id="@+id/action_allrecords"
+        android:orderInCategory="100"
+        android:title="@string/all_record"
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_allrecords"
-        android:orderInCategory="100"
-        android:title="所有记录"
-        app:showAsAction="never"/>
+
+<!--
+    <item android:id="@+id/action_mode"
+        android:title="Mode"
+        app:showAsAction="always">
+        &lt;!&ndash; 二级菜单==放到一个单选组&ndash;&gt;
+        <menu>
+
+        </menu>
+
+    </item>-->
+
+
 <!--    <item
         android:id="@+id/action_startservice"
         android:orderInCategory="100"

@@ -39,4 +39,11 @@
     <string name="split_info_3">推送標題：阿右，推送消息：GN\n
         完全匹配的規則：阿右GN 匹配標題的規則：阿右.* 匹配消息的規則：.*GN
         \n非正則規則：阿右 GN(自動轉換為.*阿右.*GN.*)</string>
+    <string name="query_hint1">推送標題</string>
+    <string name="query_hint2">消息內容</string>
+    <string name="mode_0">普通模式</string>
+    <string name="mode_1">上班模式</string>
+    <string name="mode_2">休息模式</string>
+    <string name="mode__1">不做過濾</string>
+    <string name="all_record">所有記錄</string>
 </resources>

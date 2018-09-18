@@ -30,9 +30,14 @@
         If the software is not effective, please try to reboot the meachine.</string>
     <string name="split_info_2">Message= (push title + push content).ReplaceAll (\"\\n\", \"\");         Rules[]=rule.split (\"\\n\"); Result=Pattern.matches (rules[i], message)</string>
     <string name="split_info_3">Push Title:Mr.Right  push message:GN\\n         Right rules:Mr.RightGN  Mr.Right.*  Mr.*  .*GN  .*GN.*</string>
-    <string name="Record_all">Record all notifications</string>
-    <string name="Record_all_detail">Record unselected application notification.</string>
+<!--    <string name="Record_all">Record all notifications</string>
+    <string name="Record_all_detail">Record unselected application notification.</string>-->
     <string name="query_hint1">Title</string>
     <string name="query_hint2">Content</string>
+    <string name="mode_0">Normal</string>
+    <string name="mode_1">Work</string>
+    <string name="mode_2">Home</string>
+    <string name="mode__1">Filter Off</string>
+    <string name="all_record">All Record</string>
 
 </resources>

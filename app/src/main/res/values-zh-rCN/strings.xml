@@ -24,7 +24,7 @@
         屏蔽规则范例：推送标题：阿右  推送消息：GN\n
         完全匹配的规则：阿右GN 匹配标题的规则：阿右.* 匹配消息的规则：.*GN
         \n建议在规则的前后方都无脑写通配符.*以增加匹配能力</string>
-    <string name="add_hint">一行内容即一条匹配规则，有限地支持正则</string>
+    <string name="add_hint">一行内容即一条匹配规则，有限地支持正则表达式</string>
     <string name="split_title_1">权限说明</string>
     <string name="split_title_2">匹配算法</string>
     <string name="split_title_3">规则范例</string>
@@ -33,4 +33,11 @@
     <string name="split_info_3">推送标题：阿右，推送消息：GN\n
         完全匹配的规则：阿右GN 匹配标题的规则：阿右.* 匹配消息的规则：.*GN
         \n非正则规则：阿右 GN(自动转换为.*阿右.*GN.*)</string>
+    <string name="query_hint2">消息内容</string>
+    <string name="query_hint1">推送标题</string>
+    <string name="mode_0">普通模式</string>
+    <string name="mode_1">上班模式</string>
+    <string name="mode_2">休息模式</string>
+    <string name="mode__1">不做过滤</string>
+    <string name="all_record">所有记录</string>
 </resources>
