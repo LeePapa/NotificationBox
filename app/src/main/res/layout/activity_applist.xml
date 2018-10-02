@@ -52,6 +52,16 @@
             android:theme="@style/AppTheme.TextAppearanceMidX" />
 
         <ImageButton
+            android:id="@+id/imageButtonSave3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|end"
+            android:layout_weight="0"
+            android:background="#00000000"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_note_add_black_24dp" />
+
+        <ImageButton
             android:id="@+id/imageButtonSave2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -69,6 +79,99 @@
             android:background="#00000000"
             app:srcCompat="@drawable/ic_find_in_page_black_24dp" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/viewMessageList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="6dp"
+        android:theme="@style/AppTheme.TextAppearanceMidX"
+        android:visibility="gone">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="4dp"
+                android:text="@string/add_hint" />
+
+            <EditText
+                android:id="@+id/editMessageBlackListF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/f_black_list"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:textCursorDrawable="@color/divider"
+                android:theme="@style/AppTheme.TextAppearanceMidX" />
+
+            <EditText
+                android:id="@+id/editMessageWhiteListF1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/f_white_list"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:textCursorDrawable="@color/divider"
+                android:theme="@style/AppTheme.TextAppearanceMidX" />
+
+            <EditText
+                android:id="@+id/editMessageWhiteListF2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/f_white_list2"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:textCursorDrawable="@color/divider"
+                android:theme="@style/AppTheme.TextAppearanceMidX" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/imageButtonQuery3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center|end"
+                android:layout_weight="1"
+                android:background="#00000000"
+                app:srcCompat="@drawable/ic_find_in_page_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/imageButtonSaveF"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center|end"
+                android:layout_weight="1"
+                android:background="#00000000"
+                app:srcCompat="@drawable/ic_save_black_24dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

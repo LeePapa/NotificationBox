@@ -62,6 +62,29 @@ public class DbUtils {
         }
     }
 
+    public static int removeRedord(String packageName,String qurey1,String qurey2) {
+        if(4>packageName.length()){
+
+            return NotificationBoxApp.getLiteOrm().delete(new WhereBuilder(NotificationInfo.class)
+                    .where("title LIKE ?", "%"+qurey1+"%")
+                    .and()
+                    .where("text LIKE ?", "%"+qurey2+"%")
+            );
+        }else{
+
+            return NotificationBoxApp.getLiteOrm().delete(new WhereBuilder(NotificationInfo.class)
+                    .where("packageName = ?", packageName)
+                    .and()
+                    .where("title LIKE ?", "%"+qurey1+"%")
+                    .and()
+                    .where("text LIKE ?", "%"+qurey2+"%")
+            );
+        }
+    }
+    public static int removeRedord(int count) {
+            return  NotificationBoxApp.getLiteOrm().delete(NotificationInfo.class,1,count,"_id");
+    }
+
     public static List<AppInfo> getApp() {
         return NotificationBoxApp.getLiteOrm().query(AppInfo.class);
     }
@@ -73,6 +96,10 @@ public class DbUtils {
     public static void deleteApp(AppInfo info) {
         NotificationBoxApp.getLiteOrm().delete(new WhereBuilder(AppInfo.class)
                 .where("packageName = ?", info.getPackageName()));
+    }
+
+    public static void rebuildRedord(){
+     NotificationBoxApp.getLiteOrm().deleteAll(NotificationInfo.class);
     }
 
 }

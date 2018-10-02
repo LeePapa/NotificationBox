@@ -32,6 +32,7 @@ public class NotificationListenerService extends android.service.notification.No
     private static final String TAG = "NLS";
     int flag=0;// flag是匹配消息的结果；0代表未匹配到，1 包名匹配但消息内容不匹配；2通过包名屏蔽；3通过消息内容屏蔽
 
+
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "onBind");
@@ -77,7 +78,20 @@ public class NotificationListenerService extends android.service.notification.No
 
 //        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
 
+        String com_msg= (title+"\n"+text).replaceAll("\n","");
 
+        switch (matchWhiteList(com_msg)){
+            case 2:
+                break;
+            case 1:
+                flag=2;
+                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
+                break;
+            case 0:
+                flag=3;
+                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
+                break;
+            default:{
                 List<AppInfo> blackList = DbUtils.getApp();
 
                 for (AppInfo app : blackList) {
@@ -86,7 +100,7 @@ public class NotificationListenerService extends android.service.notification.No
                         flag=1;
                         Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
 
-                        if(matchsMessage(packageName,(title+"\n"+text).replaceAll("\n",""))) {
+                        if(matchsMessage(packageName,com_msg)) {
                             // flag=2或3;
                             if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
                                 cancelNotification(sbn.getKey());
@@ -107,8 +121,11 @@ public class NotificationListenerService extends android.service.notification.No
                     text = "> " + title;
                 }
 
-        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
-                flag=0;
+                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
+               break;
+            }
+        }
+        flag=0;
     }
 
     @Override
@@ -138,6 +155,77 @@ public class NotificationListenerService extends android.service.notification.No
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         nm.notify(R.string.app_name, notification);
+    }
+
+    public int matchWhiteList(String message){
+        try{
+            String MessageBlackList;
+            SharedPreferences read = getSharedPreferences("setting",MODE_MULTI_PROCESS);
+            // 匹配超级白名单
+            MessageBlackList = read.getString(".2", "");
+            String[] blacklist=splitRulls(MessageBlackList);
+
+            if(null==blacklist){
+                Log.i("matchWhiteList","Null white list2");
+            }else {
+                for(String black:blacklist){
+                    if(Pattern.matches(black, message)){
+                       return 2;
+                    }
+                }
+            }
+            // 匹配全局白名单
+            MessageBlackList = read.getString(".1", "");
+            blacklist=splitRulls(MessageBlackList);
+
+            if(null==blacklist){
+                Log.i("matchWhiteList","Null white list1");
+            }else {
+                for(String black:blacklist){
+                    if(Pattern.matches(black, message)){
+                        return 1;
+                    }
+                }
+            }
+            // 匹配全局黑名单
+            MessageBlackList = read.getString(".0", "");
+            blacklist=splitRulls(MessageBlackList);
+
+            if(null==blacklist){
+                Log.i("matchWhiteList","Null black list");
+            }else {
+                for(String black:blacklist){
+                    if(Pattern.matches(black, message)){
+                        return 0;
+                    }
+                }
+            }
+        }catch(Exception e) {
+            Log.i("Servce getSetting()","error");
+            e.printStackTrace();
+        }
+
+    return -1;
+
+    }
+
+
+    public  void getSetting() {
+        try{
+            String MessageBlackList;
+            SharedPreferences read = getSharedPreferences("setting",MODE_MULTI_PROCESS);
+
+            MessageBlackList = read.getString(".0", "");
+            String BlackListF=(MessageBlackList);
+            MessageBlackList = read.getString(".1", "");
+            String WhiteList1=(MessageBlackList);
+            MessageBlackList = read.getString(".2", "");
+            String WhiteList2=(MessageBlackList);
+
+        }catch(Exception e) {
+            Log.i("Servce getSetting()","error");
+            e.printStackTrace();
+        }
     }
 
 
@@ -212,4 +300,7 @@ public class NotificationListenerService extends android.service.notification.No
         }
         return null;
     }
+
+
+
 }

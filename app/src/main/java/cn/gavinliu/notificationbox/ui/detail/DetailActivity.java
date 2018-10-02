@@ -37,11 +37,22 @@ public class DetailActivity extends AppCompatActivity {
     public  ImageButton ImageButtonQuery2;
     public  ImageButton ImageButtonSave2;
 
+    public EditText EditMessageBlackListF;
+    public EditText EditMessageWhiteList2;
+    public EditText EditMessageWhiteList1;
+
+    public ImageButton ImageButtonSave3;
+    public ImageButton ImageButtonQuery3;
+    public ImageButton ImageButtonSaveF;
+
     View ViewMessageBlackList;
     View ViewMessageQuery;
+    View ViewMessageList;
 
     String query1="";
     String query2="";
+
+    public Boolean FOR_FULL_APP=false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +67,7 @@ public class DetailActivity extends AppCompatActivity {
             Bundle bundle = intent.getExtras();
             appName=bundle.getString("appName");
             packageName=bundle.getString("packageName");
+            if(packageName.length()<4) FOR_FULL_APP =true;
 
             detailFragment = DetailFragment.newInstance( appName,packageName);
 
@@ -68,6 +80,7 @@ public class DetailActivity extends AppCompatActivity {
 
         ViewMessageQuery=(View)findViewById(R.id.viewMessageQurey);
         ViewMessageBlackList=(View)findViewById(R.id.viewMessageBlackList);
+        ViewMessageList=(View)findViewById(R.id.viewMessageList);
 
         Edit1=(EditText)findViewById(R.id.editMessageQuery1);
         Edit2=(EditText)findViewById(R.id.editMessageQuery2);
@@ -89,11 +102,22 @@ public class DetailActivity extends AppCompatActivity {
         EditMessageBlackList1=(EditText)findViewById(R.id.editMessageBlackList1);
         EditMessageBlackList2=(EditText)findViewById(R.id.editMessageBlackList2);
 
-        ImageButtonSave=(ImageButton)findViewById(R.id.imageButtonSave);
-
+        EditMessageBlackListF=(EditText)findViewById(R.id.editMessageBlackListF);
+        EditMessageWhiteList1=(EditText)findViewById(R.id.editMessageWhiteListF1);
+        EditMessageWhiteList2=(EditText)findViewById(R.id.editMessageWhiteListF2);
         getSetting();
 
+        ImageButtonSave=(ImageButton)findViewById(R.id.imageButtonSave);
         ImageButtonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                putSetting();
+                Toast.makeText(DetailActivity.this,"Saved",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ImageButtonSaveF=(ImageButton)findViewById(R.id.imageButtonSaveF);
+        ImageButtonSaveF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 putSetting();
@@ -120,13 +144,34 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        if(packageName.length()<4){
+        ImageButtonQuery3=(ImageButton)findViewById(R.id.imageButtonQuery3);
+        ImageButtonSave3=(ImageButton)findViewById(R.id.imageButtonSave3);
+
+        ImageButtonQuery3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewMessageList.setVisibility(View.GONE);
+                ViewMessageQuery.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        ImageButtonSave3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewMessageList.setVisibility(View.VISIBLE);
+                ViewMessageQuery.setVisibility(View.GONE);
+            }
+        });
+
+        if(FOR_FULL_APP){
             ViewMessageBlackList.setVisibility(View.GONE);
+            ViewMessageList.setVisibility(View.GONE);
             ViewMessageQuery.setVisibility(View.VISIBLE);
                 ImageButtonSave2.setVisibility(View.GONE);
+                ImageButtonSave3.setVisibility(View.VISIBLE);
+
         }
-
-
 
     }
 
@@ -143,6 +188,14 @@ public class DetailActivity extends AppCompatActivity {
 
             MessageBlackList = read.getString(packageName+".2", "");
             EditMessageBlackList2.setText(MessageBlackList);
+
+
+            MessageBlackList = read.getString(".0", "");
+            EditMessageBlackListF.setText(MessageBlackList);
+            MessageBlackList = read.getString(".1", "");
+            EditMessageWhiteList1.setText(MessageBlackList);
+            MessageBlackList = read.getString(".2", "");
+            EditMessageWhiteList2.setText(MessageBlackList);
 
             }catch(Exception e) {
                 Log.i(packageName,"error");
@@ -163,6 +216,15 @@ public class DetailActivity extends AppCompatActivity {
 
         MessageBlackList=EditMessageBlackList2.getText().toString();
         editor.putString(packageName+".2", MessageBlackList);
+
+        MessageBlackList=EditMessageBlackListF.getText().toString();
+        editor.putString(".0", MessageBlackList);
+
+        MessageBlackList=EditMessageWhiteList1.getText().toString();
+        editor.putString(".1", MessageBlackList);
+
+        MessageBlackList=EditMessageWhiteList2.getText().toString();
+        editor.putString(".2", MessageBlackList);
 
         editor.commit();
         getSetting();

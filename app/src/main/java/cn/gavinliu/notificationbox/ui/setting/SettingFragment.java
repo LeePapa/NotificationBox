@@ -5,8 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.widget.Toast;
 
 import cn.gavinliu.notificationbox.R;
+import cn.gavinliu.notificationbox.utils.DbUtils;
 
 /**
  * Created by Gavin on 2016/10/25.
@@ -28,6 +30,15 @@ public class SettingFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                 startActivity(intent);
+                return true;
+            }
+        });
+
+        findPreference("rebuildRecod").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                DbUtils.rebuildRedord();
+                Toast.makeText(getContext(),R.string.record_rebuilded,Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

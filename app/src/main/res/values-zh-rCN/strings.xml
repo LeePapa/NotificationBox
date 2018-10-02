@@ -40,4 +40,10 @@
     <string name="mode_2">休息模式</string>
     <string name="mode__1">不做过滤</string>
     <string name="all_record">所有记录</string>
+    <string name="f_black_list">全局黑名单</string>
+    <string name="f_white_list">全局白名单</string>
+    <string name="f_white_list2">超级白名单(不过滤也不记录)</string>
+    <string name="record_rebuilded">记录已经清除</string>
+    <string name="record_rebuild">清除记录</string>
+    <string name="record_rebuild2">删除所有通知记录</string>
 </resources>

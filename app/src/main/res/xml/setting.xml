@@ -10,6 +10,11 @@
             android:key="isNotify"
             android:summary="@string/reminder_summary"
             android:title="@string/reminder"/>
+        <android.support.v7.preference.PreferenceScreen
+            android:key="rebuildRecod"
+            android:summary="@string/record_rebuild2"
+            android:title="@string/record_rebuild"
+            android:widgetLayout="@layout/nb_preference_info"/>
 <!--
         <android.support.v7.preference.CheckBoxPreference
             android:defaultValue="false"

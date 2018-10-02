@@ -22,7 +22,7 @@
         Rules[]=rule.split ("\n"); Result=Pattern.matches (rules[i], message)\n
         For example -- Push Title:Mr.Right  push message:GN\n
         Right rules:Mr.RightGN  Mr.Right.*  Mr.*  .*GN  .*GN.*    </string>
-    <string name="add_hint">Each row is a blacklist, with limited support for regular expressions</string>
+    <string name="add_hint">Each row is a rule, with limited regular support</string>
     <string name="split_title_1">Permission</string>
     <string name="split_title_2">Matches Function</string>
     <string name="split_title_3">Sample Rules</string>
@@ -39,5 +39,11 @@
     <string name="mode_2">Home</string>
     <string name="mode__1">Filter Off</string>
     <string name="all_record">All Record</string>
+    <string name="f_black_list">Black list for all apps</string>
+    <string name="f_white_list">White list for all apps</string>
+    <string name="f_white_list2">White list 2 (neither filter nor recorder)</string>
+    <string name="record_rebuilded">Delete done.</string>
+    <string name="record_rebuild">Delete record</string>
+    <string name="record_rebuild2">Delete all the notification record</string>
 
 </resources>
