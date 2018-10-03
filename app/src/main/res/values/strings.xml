@@ -45,5 +45,10 @@
     <string name="record_rebuilded">Delete done.</string>
     <string name="record_rebuild">Delete record</string>
     <string name="record_rebuild2">Delete all the notification record</string>
-
+    <string name="delete">Delete</string>
+    <string name="rules">Rules</string>
+<string name="query">Query</string>
+    <string name="ok">OK</string>
+    <string name="channel">Channel</string>
+    <string name="delete_message">Delete all these records?</string>
 </resources>

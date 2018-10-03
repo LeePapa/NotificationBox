@@ -46,4 +46,10 @@
     <string name="record_rebuilded">记录已经清除</string>
     <string name="record_rebuild">清除记录</string>
     <string name="record_rebuild2">删除所有通知记录</string>
+    <string name="delete">删除</string>
+    <string name="rules">规则</string>
+    <string name="query">查找</string>
+    <string name="ok">确认</string>
+    <string name="channel">取消</string>
+    <string name="delete_message">确认删除这些记录？</string>
 </resources>

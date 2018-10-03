@@ -1,12 +1,16 @@
 package cn.gavinliu.notificationbox.ui.detail;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import cn.gavinliu.notificationbox.R;
+import cn.gavinliu.notificationbox.ui.setting.SettingActivity;
+import cn.gavinliu.notificationbox.utils.DbUtils;
 
 /**
  * Created by Gavin on 2016/10/11.
@@ -49,8 +55,8 @@ public class DetailActivity extends AppCompatActivity {
     View ViewMessageQuery;
     View ViewMessageList;
 
-    String query1="";
-    String query2="";
+    public String query1="";
+    public String query2="";
 
     public Boolean FOR_FULL_APP=false;
 
@@ -93,8 +99,8 @@ public class DetailActivity extends AppCompatActivity {
                 query2=Edit2.getText().toString();
                 reload();
                 Toast.makeText(DetailActivity.this,"Finished",Toast.LENGTH_SHORT).show();
-                query1="";
-                query2="";
+//                query1="";
+//                query2="";
             }
         });
 
@@ -173,6 +179,57 @@ public class DetailActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_record, menu);
+        menu.findItem(R.id.menu_rules).setVisible(false);
+        menu.findItem(R.id.menu_query).setVisible(false);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.menu_delete:
+            {
+                query1=Edit1.getText().toString();
+                query2=Edit2.getText().toString();
+                reload();
+                delete();
+                return true;
+            }
+            case R.id.menu_query:{
+
+                return true;
+            }
+            case R.id.menu_rules :{
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void delete(){
+        AlertDialog.Builder d=new AlertDialog.Builder(this);
+        d.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DbUtils.removeRedord(packageName,query1,query2);
+                reload();
+                Toast.makeText(DetailActivity.this,"Finished",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        d.setNegativeButton(R.string.channel,null);
+//        d.setCancelable(true);
+            d.setMessage(R.string.delete_message);
+            d.show();
     }
 
 

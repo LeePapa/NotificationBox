@@ -79,28 +79,39 @@ public class NotificationListenerService extends android.service.notification.No
 //        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
 
         String com_msg= (title+"\n"+text).replaceAll("\n","");
-
-        switch (matchWhiteList(com_msg)){
+        if(com_msg.replaceAll("\\s","").length()>0){
+        switch (matchWhiteList(com_msg)) {
             case 2:
                 break;
             case 1:
-                flag=2;
-                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
+                flag = 2;
+                if (null == text) text = "";
+                if (text.replaceAll("\\s", "").length() == 0 && title.length() > 14)   text = "> " + title;
+                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, flag));
                 break;
             case 0:
-                flag=3;
-                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
+                flag = 3;
+                    {
+                        if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+                            cancelNotification(sbn.getKey());
+                        } else {
+                            cancelNotification(sbn.getPackageName(), sbn.getTag(), sbn.getId());
+                        }
+                        if (null == text) text = "";
+                        if (text.replaceAll("\\s", "").length() == 0 && title.length() > 14)   text = "> " + title;
+                    }
+                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, flag));
                 break;
-            default:{
+            default: {
                 List<AppInfo> blackList = DbUtils.getApp();
 
                 for (AppInfo app : blackList) {
 
                     if (packageName.equals(app.getPackageName())) {
-                        flag=1;
+                        flag = 1;
                         Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
 
-                        if(matchsMessage(packageName,com_msg)) {
+                        if (matchsMessage(packageName, com_msg)) {
                             // flag=2或3;
                             if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
                                 cancelNotification(sbn.getKey());
@@ -115,15 +126,13 @@ public class NotificationListenerService extends android.service.notification.No
                     }
                 }
 
-                if(null==text){text="";}
+                if (null == text) text = "";
+                if (text.replaceAll("\\s", "").length() == 0 && title.length() > 14)   text = "> " + title;
 
-                if( text.replaceAll("\\s", "").length() == 0 && title.length()>14) {
-                    text = "> " + title;
-                }
-
-                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time,flag));
-               break;
+                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, flag));
+                break;
             }
+        }
         }
         flag=0;
     }
@@ -131,6 +140,11 @@ public class NotificationListenerService extends android.service.notification.No
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         super.onNotificationRemoved(sbn);
+    }
+
+
+    private void block(){
+
     }
 
     private void createNotification(String appName, String packageName, String title, String text) {
@@ -169,6 +183,7 @@ public class NotificationListenerService extends android.service.notification.No
                 Log.i("matchWhiteList","Null white list2");
             }else {
                 for(String black:blacklist){
+                    Log.w("black,message",black+":"+message);
                     if(Pattern.matches(black, message)){
                        return 2;
                     }
