@@ -13,7 +13,7 @@
     <string name="permission_summary">If the blocking is disabled, reset the permissions</string>
     <string name="no_read_notification_promission">No read notification permissions</string>
     <string name="empty_app">Click on the lower right corner of the button, add the blocking App</string>
-    <string name="empty_detail">The notification message to the app has not yet been intercepted</string>
+    <string name="empty_detail">There is no recorded matching your query</string>
     <string name="notify_blocking">Intercept: %1$s</string>
     <string name="add_info"> Please make sure that the application has the  RECEIVE_BOOT_COMPLETED permission and been listed in the background whitelist.\n
         If the software is not effective, please try to reboot the meachine.\n

@@ -8,8 +8,8 @@ android {
         applicationId "com.tumuyan.notificationbox"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 6
-        versionName "2.4"
+        versionCode 7
+        versionName "2.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {

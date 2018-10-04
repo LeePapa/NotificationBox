@@ -79,7 +79,7 @@ public class NotificationListenerService extends android.service.notification.No
 //        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
 
         String com_msg= (title+"\n"+text).replaceAll("\n","");
-        if(com_msg.replaceAll("\\s","").length()>0){
+        if(com_msg.replaceAll("\\s","").length()>0  && ! packageName.contains("com.tumuyan.notificationbox")){
         switch (matchWhiteList(com_msg)) {
             case 2:
                 break;
@@ -298,8 +298,9 @@ public class NotificationListenerService extends android.service.notification.No
 
                     for(String cache:result){
                         if(cache.length()!=0 && cache!="\n"){
-
-                            if(cache.replaceAll("[\\u0021-\\u002f\\u003a-\\u003f\\u005b-\\u0061\\u007b-\\u007e\\\\]+","").length()==cache.length()){
+                            if(cache.replaceAll("[\\u0021-\\u0024\\u0026-\\u002b\\u002d\\u002f\\u003a-\\u003f\\u005b-\\u0061\\u007b-\\u007e\\\\]+","").length()==cache.length()){
+                                //         减少了匹配的字符，%和.,
+                                //         if(cache.replaceAll("[\\u0021-\\u002f\\u003a-\\u003f\\u005b-\\u0061\\u007b-\\u007e\\\\]+","").length()==cache.length()){
                                     rule.add(".*"+cache.replaceAll("\\s",".*")+".*");
                             }else{
                                 rule.add(cache);

@@ -18,7 +18,7 @@
     <string name="no_read_notification_promission">沒有監聽通知欄的權限</string>
 
     <string name="empty_app">點擊右下角的按鈕，添加所需攔截的App</string>
-    <string name="empty_detail">還未攔截到該軟件的通知消息</string>
+    <string name="empty_detail">沒有符合條件的通知記錄</string>
 
     <string name="notify_blocking">攔截: %1$s</string>
     <string name="add_info">需開機自啟並列於後臺白名單，還是不行就重啟試試。\n

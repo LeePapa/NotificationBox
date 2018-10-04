@@ -13,7 +13,7 @@
     <string name="permission_summary">如果拦截失效，请取消权限后，重新配置权限</string>
     <string name="no_read_notification_promission">没有监听通知栏的权限</string>
     <string name="empty_app">点击右下角的按钮，添加所需拦截的App</string>
-    <string name="empty_detail">还未拦截到该软件的通知消息</string>
+    <string name="empty_detail">没有符合条件的消息记录</string>
     <string name="notify_blocking">拦截: %1$s</string>
     <string name="add_info">需开机自启并列于后台白名单，还是不行就重启试试。\n
         内容过滤器有限地支持正则匹配。1行为1条匹配规则。\n

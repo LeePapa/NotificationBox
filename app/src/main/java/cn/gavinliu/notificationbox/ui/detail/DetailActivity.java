@@ -63,7 +63,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_applist);
+        setContentView(R.layout.activity_record_list_new);
 
         DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_applist);
