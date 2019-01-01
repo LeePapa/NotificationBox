@@ -9,14 +9,12 @@ import android.os.Build;
 import android.os.IBinder;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import cn.gavinliu.notificationbox.NotificationBoxApp;
 import cn.gavinliu.notificationbox.R;
+import cn.gavinliu.notificationbox.baidutts.ttsProxy;
 import cn.gavinliu.notificationbox.model.AppInfo;
 import cn.gavinliu.notificationbox.model.NotificationInfo;
 import cn.gavinliu.notificationbox.ui.detail.DetailActivity;
@@ -45,9 +43,11 @@ public class NotificationListenerService extends android.service.notification.No
         return super.onUnbind(intent);
     }
 
+    ttsProxy ttsProxy;
     @Override
     public void onCreate() {
         super.onCreate();
+        ttsProxy=new ttsProxy(getApplicationContext());
         Log.i(TAG, "onCreate");
     }
 
@@ -79,7 +79,7 @@ public class NotificationListenerService extends android.service.notification.No
 //        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
 
         String com_msg= (title+"\n"+text).replaceAll("\n","");
-        if(com_msg.replaceAll("\\s","").length()>0  && ! packageName.contains("com.tumuyan.notificationbox")){
+        if(com_msg.replaceAll("\\s","").length()>0  && ! packageName.contains("com.tumuyan.notification")){
         switch (matchWhiteList(com_msg)) {
             case 2:
                 break;
@@ -108,6 +108,7 @@ public class NotificationListenerService extends android.service.notification.No
                 for (AppInfo app : blackList) {
 
                     if (packageName.equals(app.getPackageName())) {
+                        ttsProxy.read(com_msg);
                         flag = 1;
                         Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
 
@@ -127,6 +128,7 @@ public class NotificationListenerService extends android.service.notification.No
                 }
 
                 if (null == text) text = "";
+                if (null == title) title="";
                 if (text.replaceAll("\\s", "").length() == 0 && title.length() > 14)   text = "> " + title;
 
                 DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, flag));
