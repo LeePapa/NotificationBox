@@ -42,4 +42,5 @@ dependencies {
     compile 'com.android.support:design:24.2.1'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
+ //   compile files('libs/com.baidu.tts_2.3.2.20180713_6101c2a.jar')
 }
