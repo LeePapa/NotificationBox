@@ -26,12 +26,15 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.gavinliu.notificationbox.R;
 import cn.gavinliu.notificationbox.baidutts.ttsProxy;
 import cn.gavinliu.notificationbox.model.AppInfo;
 import cn.gavinliu.notificationbox.model.NotificationInfo;
+import cn.gavinliu.notificationbox.msg.TextBook;
+import cn.gavinliu.notificationbox.msg.imTextBook;
 import cn.gavinliu.notificationbox.ui.detail.DetailActivity;
 import cn.gavinliu.notificationbox.ui.main.MainContract;
 import cn.gavinliu.notificationbox.utils.DbUtils;
@@ -71,13 +74,6 @@ public class NotificationListenerService extends android.service.notification.No
         Log.i(TAG, "onCreate");
     }
 
-    private void toggleNotificationListenerService() {
-        PackageManager pm = getPackageManager();
-        pm.setComponentEnabledSetting(new ComponentName(this, cn.gavinliu.notificationbox.service.NotificationListenerService.class),
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-        pm.setComponentEnabledSetting(new ComponentName(this, cn.gavinliu.notificationbox.service.NotificationListenerService.class),
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-    }
 
     @Override
     public void onDestroy() {
@@ -160,42 +156,69 @@ public class NotificationListenerService extends android.service.notification.No
 
         Notification notification = sbn.getNotification();
         String packageName = sbn.getPackageName();
-        RemoteViews notificationView = notification.contentView;
-        genRemoteViewsDecoder(notificationView);
-
-        ArrayList<String> list_nText = new ArrayList<>();
-        String string_nText = "";
-        String s;
-        if (null != notification) {
-
-            try {
-
-                ArrayList<?> mActions = (ArrayList<?>) filedmActions.get(notificationView);
-                for (Object o : mActions) {
-                    try {
-                        String value =  (String)(filedValue.get(o));
-                        if ( "setText".equals((String)(filedMethod.get(o))) && null!=value) {
-                            string_nText += value + "\n";
-                            list_nText.add(value);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                Log.i("" + msg_count + " any 0e", string_nText);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         long time = sbn.getPostTime();
         String title = notification.extras.getString(Notification.EXTRA_TITLE);
         String text = notification.extras.getString(Notification.EXTRA_TEXT);
 
+        boolean null_text = false;
+
+        if (null == title) title = "";
+
+        if (null == text) text = "";
+
+        if ((title + text).replaceAll("\\s", "").length() < 1)
+            null_text = true;
+
+        if (null_text) {
+
+            RemoteViews notificationView = notification.contentView;
+            genRemoteViewsDecoder(notificationView);
+
+            LinkedList<String> list_nText = new LinkedList<>();
+            String string_nText = "";
+
+            if (null != notification) {
+
+                try {
+                    ArrayList<?> mActions = (ArrayList<?>) filedmActions.get(notificationView);
+                    for (Object o : mActions) {
+                      //  if(o instanceof android.widget.RemoteViews$ReflectionAction )
+                        if(!"ReflectionAction".equals(o.getClass().getSimpleName()) ) continue;
+                        try {
+                            if ("setText".equals((String) (filedMethod.get(o)))) {
+                                String value = (String) (filedValue.get(o));
+                                if (null == value) continue;
+                                if (value.replaceAll("\\s", "").length() < 1) continue;
+                                string_nText += value + "\n";
+                                list_nText.add(value);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Log.i("" + msg_count + " any 0e", string_nText);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (list_nText.size() > 0) {
+                null_text = false;
+                title = list_nText.remove();
+                for (String s : list_nText) {
+                    text += s + "\n";
+                }
+            }
+        }
+
 //        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
 
-        String com_msg = (title + "\n" + text).replaceAll("\n", "");
-        if (com_msg.replaceAll("\\s", "").length() > 0 && !packageName.contains("com.tumuyan.notification")) {
+        if (!null_text && !packageName.contains("com.tumuyan.notification")) {
+            title = title.trim();
+            text = text.trim();
+
+            String com_msg = (title + "\n" + text).replaceAll("\n", "");
             switch (matchWhiteList(com_msg)) {
                 case 2:
                     break;
@@ -227,8 +250,12 @@ public class NotificationListenerService extends android.service.notification.No
 
                         if (packageName.equals(app.getPackageName())) {
                             if (mode_read) {
-                                ttsProxy.read(com_msg);
+                                ttsProxy.read(getTextBook(title, text, packageName),new_speaker);
+
                             }
+
+                            if (true) return;
+
 
                             flag = 1;
                             Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
@@ -267,9 +294,109 @@ public class NotificationListenerService extends android.service.notification.No
     }
 
 
-    private void block() {
+    private String TextTool_num2words(String input){
+        // 从文本数字混合转换为汉字。通过这种方式纠正数字读音，避免ED2 读为ED two 支持前后缀，但是如果出现两段数字，无法正确解析
+        String number=input.replaceAll("[^0-9]*","");
+        String words="";
+        switch (number){
+            case "0":
+                words="零";
+                break;
+            case "1":
+                words="一";
+                break;
+            case "2":
+                words="二";
+                break;
+            case "3":
+                words="三";
+                break;
+            case "4":
+                words="四";
+                break;
+            case "5":
+                words="五";
+                break;
+            case "6":
+                words="六";
+                break;
+            case "7":
+                words="七";
+                break;
+            case "8":
+                words="八";
+                break;
+            case "9":
+                words="九";
+                break;
+            default:
+                Log.w("TextTool_num2words","oped error -"+number+"-"+words);
+
+        }
+
+        return input.replace(number,words);
 
     }
+
+
+    private Pattern patterMusicOriginal=Pattern.compile("《[^《》]+》(\\s)?(第[0-9一二三四五六七八九十零壹贰叁肆伍陆柒]+季)?(\\s)?(OP|ED|片头|片头曲|主题曲|角色歌|OST|片尾|片尾曲|插入歌)?(\\d+)?");
+    private Pattern patternMusicOPED=Pattern.compile("(OP|ED)(\\d+)");
+
+
+    private TextBook old_book;
+    private boolean new_speaker;
+
+    private String getTextBook(String title, String text, String pkg) {
+
+        switch (pkg) {
+            case "com.netease.cloudmusic":
+                Matcher m=patterMusicOriginal.matcher(title);
+                String original="";
+
+
+
+                if(m.find()){
+                    original=m.group(0);
+                    title=title.replace(original,"").replaceFirst("\\(\\s\\)","");
+                    String OPED=original.replaceFirst("[^(OP)(ED)]+","");
+                    original=original.replace(OPED,"");
+                    OPED=TextTool_num2words(OPED);
+                    Log.w("music suffix OPED",original+"=>"+OPED);
+                    original+="，"+OPED;
+                }
+
+                return title + original +"。"+  text.substring(0, text.indexOf(" - "));
+
+/*
+
+                // 先把（）括号全部替换为西文半角
+                title= title.replaceAll("(\\(|（|（|（)([^(|（|（|（]*)(\\)|）|）|）)", "($2)")
+                     //   .replaceFirst("(OP|ED)(\\d+)",TextBookTool_num2words($1 $2))
+                        + "。  " + text.substring(0, text.indexOf(" - "));
+*/
+
+
+            case "com.tencent.mm":{
+                imTextBook im=new imTextBook(title,text.replaceFirst("^\\[\\d+条\\]",""),":");
+                new_speaker=im.isDifferentSpeaker(old_book);
+                old_book=im.getTextBook();
+                return  im.getString();
+            }
+
+
+            case "com.tencent.mobileqq":{
+                imTextBook im=new imTextBook(title.replaceFirst("\\(\\d+条新消息\\)$",""),text,":");
+                new_speaker=im.isDifferentSpeaker(old_book);
+                old_book=im.getTextBook();
+                return  im.getString();
+            }
+
+        }
+
+
+        return "";
+    }
+
 
     private void createNotification(String appName, String packageName, String title, String text) {
 

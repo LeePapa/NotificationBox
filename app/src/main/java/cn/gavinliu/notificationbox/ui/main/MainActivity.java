@@ -195,6 +195,11 @@ public class MainActivity extends AppCompatActivity {
                 editor.commit();
                 break;
             }
+
+            case R.id.action_startservice:{
+                toggleNotificationListenerService();
+                break;
+            }
         }
 
 
@@ -227,6 +232,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void toggleNotificationListenerService() {
+        PackageManager pm = getPackageManager();
+        pm.setComponentEnabledSetting(new ComponentName(this, cn.gavinliu.notificationbox.service.NotificationListenerService.class),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        pm.setComponentEnabledSetting(new ComponentName(this, cn.gavinliu.notificationbox.service.NotificationListenerService.class),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
 
     public static Intent getExplicitIntent(Context context, Intent implicitIntent) {
         // Retrieve all services that can match the given intent

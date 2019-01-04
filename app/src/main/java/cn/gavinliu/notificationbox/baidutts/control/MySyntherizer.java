@@ -156,6 +156,10 @@ public class MySyntherizer   {
         }
     }
 
+    public void setParam(String key,String value){
+        mSpeechSynthesizer.setParam(key,value);
+    }
+
     public int pause() {
         return mSpeechSynthesizer.pause();
     }

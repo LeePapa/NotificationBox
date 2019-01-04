@@ -13,7 +13,10 @@ import com.baidu.tts.client.TtsMode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.gavinliu.notificationbox.baidutts.control.InitConfig;
 import cn.gavinliu.notificationbox.baidutts.control.MySyntherizer;
@@ -21,6 +24,7 @@ import cn.gavinliu.notificationbox.baidutts.control.NonBlockSyntherizer;
 import cn.gavinliu.notificationbox.baidutts.listener.UiMessageListener;
 import cn.gavinliu.notificationbox.baidutts.util.AutoCheck;
 import cn.gavinliu.notificationbox.baidutts.util.OfflineResource;
+import cn.gavinliu.notificationbox.msg.imTextBook;
 
 public class ttsProxy {
 
@@ -58,30 +62,78 @@ public class ttsProxy {
     Context context;
 
 
-
-
-
-    public ttsProxy(Context context){
-        this.context=context;
+    public ttsProxy(Context context) {
+        this.context = context;
         initialTts();
     }
 
-    public void init(){
+    public void init() {
 
     }
 
-    public void read(String s) {
+    private int speaker = 0;
+
+
+/*    private ArrayList<String> books=new ArrayList<>();
+
+    private void setSpeaker(String s){
+
+        if(books.contains(s)){
+            books.remove(s);
+            books.add(s);
+        }
+
+            if(books.size()>10)
+                books.remove(0);*/
+
+    private void setSpeaker(boolean next) {
+        if (next) speaker++;
+        else speaker = 0;
+
+        String offlineVoice = "";
+        String onlineVoide = "";
+
+        switch (speaker % 4) {
+            case 0:
+                offlineVoice = OfflineResource.VOICE_FEMALE;
+                onlineVoide = "0";
+                break;
+            case 1:
+                offlineVoice = OfflineResource.VOICE_MALE;
+                onlineVoide = "2";
+                break;
+            case 2:
+                offlineVoice = OfflineResource.VOICE_DUYY;
+                onlineVoide = "4";
+                break;
+            case 3:
+                offlineVoice = OfflineResource.VOICE_DUXY;
+                onlineVoide = "3";
+                break;
+        }
+        OfflineResource offlineResource = createOfflineResource(offlineVoice);
+        int result = synthesizer.loadModel(offlineResource.getModelFilename(), offlineResource.getTextFilename());
+        checkResult(result, "loadModel");
+
+        // 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>
+        synthesizer.setParam(SpeechSynthesizer.PARAM_SPEAKER, onlineVoide);
+    }
+
+
+    public void read(String s, boolean new_speaker) {
+        if (new_speaker)
+            setSpeaker(true);
         int result = -1;
         if (null == s) {
             result = synthesizer.speak("消息来了");
 
         } else if (s.length() < ClipLength) {
             result = synthesizer.speak(s);
-        } else{
-            String clip=getClipString(s);
+        } else {
+            String clip = getClipString(s);
 
-            while (clip.length()>0){
-                clip=getClipString(clip);
+            while (clip.length() > 0) {
+                clip = getClipString(clip);
             }
 
         }
@@ -94,42 +146,41 @@ public class ttsProxy {
 
     }
 
-    private int ClipLength=513;
+    private int ClipLength = 513;
 
-    private String[] getClip(String in){
-        String[] out=new String[]{
-                "",""
+    private String[] getClip(String in) {
+        String[] out = new String[]{
+                "", ""
         };
-        if(null==in){
+        if (null == in) {
             return out;
         }
-        if(in.length()<ClipLength){
-            out[0]=in;
-        }else {
-            String f1=in.substring(0,ClipLength-1);
-            String f2=f1.replaceFirst("([。？！~…，]|\\s)[^。？！~…，]*$","$1");
-            out[0]=f2;
-            out[1]=in.substring(f2.length());
+        if (in.length() < ClipLength) {
+            out[0] = in;
+        } else {
+            String f1 = in.substring(0, ClipLength - 1);
+            String f2 = f1.replaceFirst("([。？！~…，]|\\s)[^。？！~…，]*$", "$1");
+            out[0] = f2;
+            out[1] = in.substring(f2.length());
         }
         return out;
     }
 
-    private String getClipString(String in){
+    private String getClipString(String in) {
 
-        if(null==in){
+        if (null == in) {
             return "";
         }
-        if(in.length()<ClipLength){
+        if (in.length() < ClipLength) {
             synthesizer.speak(in);
-        }else {
-            String f1=in.substring(0,ClipLength-1);
-            String f2=f1.replaceFirst("([。？！~…，]|\\s)[^。？！~…，]*$","$1");
+        } else {
+            String f1 = in.substring(0, ClipLength - 1);
+            String f2 = f1.replaceFirst("([。？！~…，]|\\s)[^。？！~…，]*$", "$1");
             synthesizer.speak(f2);
-            return  in.substring(f2.length());
+            return in.substring(f2.length());
         }
         return "";
     }
-
 
 
     private void initialTts() {
@@ -164,7 +215,7 @@ public class ttsProxy {
                     AutoCheck autoCheck = (AutoCheck) msg.obj;
                     synchronized (autoCheck) {
                         String message = autoCheck.obtainDebugMessage();
-                        Log.i("TTS error",message); // 可以用下面一行替代，在logcat中查看代码
+                        Log.i("TTS error", message); // 可以用下面一行替代，在logcat中查看代码
                         // Log.w("AutoCheckMessage", message);
                     }
                 }
@@ -198,11 +249,13 @@ public class ttsProxy {
         }*/
     }
 
+/*
     protected void toPrint(String str) {
         Message msg = Message.obtain();
         msg.obj = str;
         mainHandler.sendMessage(msg);
     }
+*/
 
 
     /**
@@ -246,7 +299,7 @@ public class ttsProxy {
         } catch (IOException e) {
             // IO 错误自行处理
             e.printStackTrace();
-            Log.i("TTS error","【error】:copy files from assets failed." + e.getMessage());
+            Log.i("TTS error", "【error】:copy files from assets failed." + e.getMessage());
         }
         return offlineResource;
     }
@@ -256,24 +309,25 @@ public class ttsProxy {
      * speak 实际上是调用 synthesize后，获取音频流，然后播放。
      * 获取音频流的方式见SaveFileActivity及FileSaveListener
      * 需要合成的文本text的长度不能超过1024个GBK字节。
+     * 这是示例的方法，目前已经改用read()了
+     * <p>
+     * private void speak(String text) {
+     * //    String text="消息来了" ;
+     * //=  mInput.getText().toString();
+     * // 需要合成的文本text的长度不能超过1024个GBK字节。
+     * if (null==text) {
+     * text = "百度语音，面向广大开发者永久免费开放语音合成技术。";
+     * }
+     * // 合成前可以修改参数：
+     * // Map<String, String> params = getParams();
+     * // synthesizer.setParams(params);
+     * int result = synthesizer.speak(text);
+     * checkResult(result, "speak");
+     * }
      */
-    private void speak(String text) {
-    //    String text="消息来了" ;
-        //=  mInput.getText().toString();
-        // 需要合成的文本text的长度不能超过1024个GBK字节。
-        if (null==text) {
-            text = "百度语音，面向广大开发者永久免费开放语音合成技术。";
-        }
-        // 合成前可以修改参数：
-        // Map<String, String> params = getParams();
-        // synthesizer.setParams(params);
-        int result = synthesizer.speak(text);
-        checkResult(result, "speak");
-    }
-
     private void checkResult(int result, String method) {
         if (result != 0) {
-            Log.i("TTS error","error code :" + result + " method:" + method + ", 错误码文档:http://yuyin.baidu.com/docs/tts/122 ");
+            Log.i("TTS error", "error code :" + result + " method:" + method + ", 错误码文档:http://yuyin.baidu.com/docs/tts/122 ");
         }
     }
 

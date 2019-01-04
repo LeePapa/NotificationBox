@@ -53,9 +53,9 @@
     </item>-->
 
 
-<!--    <item
+    <item
         android:id="@+id/action_startservice"
         android:orderInCategory="100"
         android:title="启动服务"
-        app:showAsAction="never"/>-->
+        app:showAsAction="never"/>
 </menu>
