@@ -28,11 +28,10 @@
     <string name="split_title_1">权限说明</string>
     <string name="split_title_2">匹配算法</string>
     <string name="split_title_3">规则范例</string>
-    <string name="split_info_1">需自启权限，如果无效一定是各种管家和系统设置的犄角旮旯的地方没有给权限。\n内容过滤器有限地支持正则匹配，过滤器为空则会屏蔽该应用的全部消息。</string>
-    <string name="split_info_2">一行内容即一条匹配规则，符合规则的消息会被屏蔽。\n如包含英文符号识别规则为正则表达式；\n否则程序自动替换空格和制表符为".*"，按照正则方式匹配。</string>
-    <string name="split_info_3">推送标题：阿右，推送消息：GN\n
-        完全匹配的规则：阿右GN 匹配标题的规则：阿右.* 匹配消息的规则：.*GN
-        \n非正则规则：阿右 GN(自动转换为.*阿右.*GN.*)</string>
+    <string name="split_info_1">需自启权限，如果无效一定是各种管家和系统设置的犄角旮旯的地方没有给权限。\n内容过滤器有限地支持正则匹配，过滤器为空则读出该应用的全部消息。</string>
+    <string name="split_info_2">不为空时，一行内容即一条匹配规则，使用收到消息的第一行内容与规则进行匹配（典型的例子是微信聊天的群名）。</string>
+    <string name="split_info_3">如包含英文符号识别规则为正则表达式；\n否则程序自动替换空格和制表符为".*"，按照正则方式匹配。\n
+</string>
     <string name="query_hint2">消息内容</string>
     <string name="query_hint1">推送标题</string>
     <string name="mode_0">普通模式</string>

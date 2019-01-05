@@ -108,18 +108,25 @@ public class imTextBook {
         // 先处理固定句式
 
         if ("QQ".equals(titleStr)) {
+            Log.w("detect qq","match");
             if (textStr.contains("QQ正在后台运行")) return;
-            if (textStr.matches("\\s*有(\\d+)个联系人给你发过来(\\d+)条新消息\\s*")) {
-                out_text = textStr.replaceFirst("有(\\d+)个联系人给你发过来(\\d+)条新消息", "q-q:收到$1个联系人的$2条消息");
+            if (textStr.matches("有\\s*(\\d+)\\s*个联系人给你发过来(\\d+)条新消息")) {
+                out_text = textStr.replaceFirst("有\\s*(\\d+)\\s*个联系人给你发过来(\\d+)条新消息", "q-q:收到$1个联系人的$2条消息");
+                Log.w("detect qq","match2");
                 return;
             }
+        }else{
+            Log.w("not detect qq","-"+titleStr+"-");
         }
 
         String[] in_text = textStr.split(neckStr, 2);
-        if (in_text.length == 2) {
-            sender = in_text[0];
-            // 如果存在联系人，那么文本显然不应该包含联系人了
-            textStr = in_text[1];
+        if (in_text.length == 2 ) {
+            if(in_text[0].length()<24 && !in_text[0].contains("\n")){
+                //长度不能过长
+                sender = in_text[0];
+                // 如果存在联系人，那么文本显然不应该包含联系人了
+                textStr = in_text[1];
+            }
         }
 
         group = titleStr;
@@ -131,9 +138,17 @@ public class imTextBook {
                 break;
             }
         }
+
+        if(sender.length()<1 && group.length()>0){
+            sender=group;
+            group="";
+        }
+
         // 我认为联系人如果是纯数字，读出来是没有意义的
         if (sender.matches("\\d{6,20}"))
             sender = "";
+
+
 
         String i2_text = textStr.replaceAll("\\[.{0,4}\\]", " ");
         if (i2_text.replaceAll("\\s", "").length() < 1) {

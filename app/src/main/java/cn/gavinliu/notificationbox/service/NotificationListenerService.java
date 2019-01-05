@@ -187,7 +187,9 @@ public class NotificationListenerService extends android.service.notification.No
                         if(!"ReflectionAction".equals(o.getClass().getSimpleName()) ) continue;
                         try {
                             if ("setText".equals((String) (filedMethod.get(o)))) {
-                                String value = (String) (filedValue.get(o));
+                            //    String value = (String) (filedValue.get(o));
+                                //  由于收到短信时，获取的是spannableString 造成错误。故暂时使用如下方法
+                                String value = ""+ (filedValue.get(o));
                                 if (null == value) continue;
                                 if (value.replaceAll("\\s", "").length() < 1) continue;
                                 string_nText += value + "\n";
@@ -217,80 +219,47 @@ public class NotificationListenerService extends android.service.notification.No
         if (!null_text && !packageName.contains("com.tumuyan.notification")) {
             title = title.trim();
             text = text.trim();
-
-            String com_msg = (title + "\n" + text).replaceAll("\n", "");
-            switch (matchWhiteList(com_msg)) {
-                case 2:
-                    break;
-                case 1:
-                    flag = 2;
-                    if (null == text) text = "";
-                    if (text.replaceAll("\\s", "").length() == 0 && title.length() > 14)
-                        text = "> " + title;
-                    DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, flag));
-                    break;
-                case 0:
-                    flag = 3;
-                {
-                    if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
-                        cancelNotification(sbn.getKey());
-                    } else {
-                        cancelNotification(sbn.getPackageName(), sbn.getTag(), sbn.getId());
-                    }
-                    if (null == text) text = "";
-                    if (text.replaceAll("\\s", "").length() == 0 && title.length() > 14)
-                        text = "> " + title;
-                }
-                DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, flag));
-                break;
-                default: {
-                    List<AppInfo> blackList = DbUtils.getApp();
-
-                    for (AppInfo app : blackList) {
-
-                        if (packageName.equals(app.getPackageName())) {
-                            if (mode_read) {
-                                ttsProxy.read(getTextBook(title, text, packageName),new_speaker);
-
-                            }
-
-                            if (true) return;
-
-
-                            flag = 1;
-                            Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
-
-                            if (matchsMessage(packageName, com_msg)) {
-                                // flag=2或3;
-                                if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
-                                    cancelNotification(sbn.getKey());
-                                } else {
-                                    cancelNotification(sbn.getPackageName(), sbn.getTag(), sbn.getId());
-                                }
-
-                                if (SettingUtils.getInstance().isNotify()) {
-                                    createNotification(app.getAppName(), packageName, title, text);
-                                }
-                            }
-                        }
-                    }
-
-                    if (null == text) text = "";
-                    if (null == title) title = "";
-                    if (text.replaceAll("\\s", "").length() == 0 && title.length() > 14)
-                        text = "> " + title;
-
-                    DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, flag));
-                    break;
-                }
-            }
+            go_reader(packageName,title,text);
         }
-        flag = 0;
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         super.onNotificationRemoved(sbn);
+    }
+
+    ArrayList<String> list_OldBook=new ArrayList<>();
+
+    private void go_reader(String packageName,String title,String text) {
+        SharedPreferences read = getSharedPreferences("setting", MODE_MULTI_PROCESS);
+        //更新朗读模式
+        mode_read = read.getBoolean("mode_read", true);
+        Log.w("get readmode", "" + mode_read);
+        if(!mode_read) return;
+        long time=System.currentTimeMillis();
+
+        List<AppInfo> blackList = DbUtils.getApp();
+
+        for (AppInfo app : blackList) {
+
+            if (packageName.equals(app.getPackageName())) {
+                Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
+
+                String com_msg;
+                if(title.length()>0)
+                     com_msg=title;
+                else
+                     com_msg=text.substring(0,text.indexOf("\n"));
+
+                if (matchsMessage(packageName, com_msg)) {
+                    ttsProxy.read(getTextBook(title, text, packageName),new_speaker);
+                    DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, 1));
+                }
+                return;
+            }
+        }
+        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, 0));
+
     }
 
 
@@ -346,14 +315,32 @@ public class NotificationListenerService extends android.service.notification.No
     private TextBook old_book;
     private boolean new_speaker;
 
+    private boolean remove_repeat(String s){
+        if(list_OldBook.contains(s)){
+            return true;
+        }
+        list_OldBook.add(0,s);
+        return false;
+    }
+
     private String getTextBook(String title, String text, String pkg) {
 
+        new_speaker=false;
+        if(text.matches(".{1,50}正在后台运行"))
+            return "";
+
+        //避免解锁时重新绘制ui导致的短信重复播报。其他app待添加
+        if(pkg.matches(".*mms")){
+            if(remove_repeat(title+text)){
+                return "";
+            }
+        }
+
+        new_speaker=true;
         switch (pkg) {
             case "com.netease.cloudmusic":
                 Matcher m=patterMusicOriginal.matcher(title);
                 String original="";
-
-
 
                 if(m.find()){
                     original=m.group(0);
@@ -394,7 +381,7 @@ public class NotificationListenerService extends android.service.notification.No
         }
 
 
-        return "";
+        return title+" "+text;
     }
 
 

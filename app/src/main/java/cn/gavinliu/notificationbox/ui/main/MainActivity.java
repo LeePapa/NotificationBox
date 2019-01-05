@@ -142,13 +142,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             }
-            case R.id.action_allrecords:{
+/*            case R.id.action_allrecords:{
                 Intent intent = new Intent(this, DetailActivity.class);
                 intent.putExtra("appName", "");
                 intent.putExtra("packageName", "");
                 startActivity(intent);
                 return true;
-            }
+            }*/
             case R.id.mode_0 :{
                 mode=0;
                 break;
@@ -195,11 +195,11 @@ public class MainActivity extends AppCompatActivity {
                 editor.commit();
                 break;
             }
-
+/*
             case R.id.action_startservice:{
                 toggleNotificationListenerService();
                 break;
-            }
+            }*/
         }
 
 

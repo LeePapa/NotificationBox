@@ -1,6 +1,7 @@
 package cn.gavinliu.notificationbox.baidutts;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -39,6 +40,30 @@ public class ttsProxy {
 
     protected String secretKey = "MhZMCxDbbuy8Rf5YpDnT92hFIv8PST4Q";
 
+
+
+    /**
+     * 判断当前应用是否是debug状态
+     */
+
+   private boolean isApkInDebug(Context context) {
+        try {
+            ApplicationInfo info = context.getApplicationInfo();
+            boolean debug=( (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
+            if(debug)
+            {
+                 appId = "15347797";
+                 appKey = "hxGdw2a7uWcBmViONsgQ3ghD";
+                 secretKey = "yPxIj90jbghFnyd0FhcjWNH7dYlr0kEh";
+
+            }
+
+            return debug;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     // TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
     protected TtsMode ttsMode = TtsMode.MIX;
 
@@ -64,27 +89,12 @@ public class ttsProxy {
 
     public ttsProxy(Context context) {
         this.context = context;
+        isApkInDebug(context);
         initialTts();
     }
 
-    public void init() {
-
-    }
 
     private int speaker = 0;
-
-
-/*    private ArrayList<String> books=new ArrayList<>();
-
-    private void setSpeaker(String s){
-
-        if(books.contains(s)){
-            books.remove(s);
-            books.add(s);
-        }
-
-            if(books.size()>10)
-                books.remove(0);*/
 
     private void setSpeaker(boolean next) {
         if (next) speaker++;
@@ -120,14 +130,20 @@ public class ttsProxy {
     }
 
 
+
+
+
+
     public void read(String s, boolean new_speaker) {
+        if(null==s)
+            return;
+        if(s.length()<1)
+            return;
+
         if (new_speaker)
             setSpeaker(true);
         int result = -1;
-        if (null == s) {
-            result = synthesizer.speak("消息来了");
-
-        } else if (s.length() < ClipLength) {
+         if (s.length() < ClipLength) {
             result = synthesizer.speak(s);
         } else {
             String clip = getClipString(s);
