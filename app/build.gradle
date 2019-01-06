@@ -8,8 +8,8 @@ android {
         applicationId "com.tumuyan.notificationreader"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 8
-        versionName "2.6R1"
+        versionCode 9
+        versionName "2.6R2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
