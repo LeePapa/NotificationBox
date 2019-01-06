@@ -1,6 +1,7 @@
 package cn.gavinliu.notificationbox.msg;
 
 
+import static cn.gavinliu.notificationbox.msg.Dictionary.num2words;
 
 public class musicTextBook {
 
@@ -34,18 +35,24 @@ public class musicTextBook {
 
     public musicTextBook(String titleStr, String textStr, String pkg) {
         // 先处理固定句式
-        String[] song_tag=(titleStr+","+textStr).replaceAll("([^0-9])-([^0-9])","$1 $2").split("[()~]");
+        String[] song_tag=(titleStr+","+textStr).replaceAll("([^0-9])-([^0-9])","$1 $2").split("[\\(\\)（）,~]");
 
         for(String tag:song_tag){
-            String s=tag.replaceAll("(\\s|_)+"," ");
+            String s=tag.trim().replaceAll("(\\s|_)+"," ");
             if(s.contains(" "))
             {
-                if(s.replaceAll("\\s","").matches("[A-Z]+")){
+                if(s.replaceAll("\\s","").matches("[A-Z]{3,}[a-zA-Z]+")){
                     //如果全部大写了,那么有可能是错误的拼写,需要转换小写以免误读
-                    out_text+=s.toLowerCase();
-                    continue;
+                   s=s.toLowerCase();
                 }
+
             }
+            if(s.matches(".+\\s(ver.|Ver.|ver|Ver)$")){
+                s+="sion";
+            }else if(s.matches(".*(OP|ED)\\d+")){
+                s=num2words(s,1);
+            }
+
             if(s.replace(" ","").length()>0)
                 out_text+=","+s;
         }

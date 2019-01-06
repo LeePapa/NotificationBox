@@ -1,5 +1,7 @@
 package cn.gavinliu.notificationbox.msg;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 import static java.util.Arrays.asList;
@@ -9,6 +11,64 @@ public class Dictionary {
    static public ArrayList<String> dic_msg_tag=new ArrayList<String>(asList(
            "[图片]","[表情图片]","[魔法表情]","[表情]"
    ));
+
+   static public String  num2words(String input,int mode){
+      // 从文本数字混合转换为汉字。通过这种方式纠正数字读音，避免ED2 读为ED two 支持前后缀，但是如果出现两段数字，无法正确解析
+
+      String number="";
+      switch (mode){
+         case 0:
+             number =input.replaceAll("[^0-9]*","");
+             break;
+         case 1:
+            number=input.replaceFirst("^.*[^0-9]([0-9])$","$1");
+            break;
+         case -1:
+            number=input.replaceFirst("^([0-9])[^0-9]$","$1");
+            break;
+      }
+
+      String words="";
+      switch (number){
+         case "0":
+            words="零";
+            break;
+         case "1":
+            words="一";
+            break;
+         case "2":
+            words="二";
+            break;
+         case "3":
+            words="三";
+            break;
+         case "4":
+            words="四";
+            break;
+         case "5":
+            words="五";
+            break;
+         case "6":
+            words="六";
+            break;
+         case "7":
+            words="七";
+            break;
+         case "8":
+            words="八";
+            break;
+         case "9":
+            words="九";
+            break;
+         default:
+            Log.w("TextTool_num2words","oped error -"+number+"-"+words);
+
+      }
+
+      return input.replace(number,words);
+
+   }
+
 
    static public ArrayList<String> dic_pinyin= new ArrayList<String>(asList(
 

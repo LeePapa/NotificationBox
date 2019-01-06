@@ -80,9 +80,9 @@ public class imTextBook {
                 if (_sender.length() > 0) return _sender + " " + _out_text;
             } else {
                 if (_group.length() > 0 && _sender.length() > 0)
-                    return _group + "的" + _sender + "说，" + _out_text;
+                    return _group + "的" + _sender + "说(shuo1)，" + _out_text;
                 if (_group.length() > 0) return _group + "发来消息，" + _out_text;
-                if (_sender.length() > 0) return _sender + "说，" + _out_text;
+                if (_sender.length() > 0) return _sender + "说(shuo1)，" + _out_text;
 
             }
             return _out_text;

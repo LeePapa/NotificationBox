@@ -53,6 +53,9 @@ public class NotificationListenerService extends android.service.notification.No
     private boolean mode_read = true;
     private int msg_count = 0;
 
+    private Field filedValue, filedMethod, filedmActions;
+    ttsProxy ttsProxy;
+
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "onBind");
@@ -65,26 +68,15 @@ public class NotificationListenerService extends android.service.notification.No
         return super.onUnbind(intent);
     }
 
-    ttsProxy ttsProxy;
-    boolean ttsInit=true;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         //  toggleNotificationListenerService();
         ttsProxy = new ttsProxy(getApplicationContext());
-        //   init.start();
         Log.i(TAG, "onCreate");
     }
-
-    Thread init=new Thread(new Runnable() {
-        @Override
-        public void run() {
-            ttsProxy = new ttsProxy(getApplicationContext());
-            ttsInit=false;
-        }
-    });
-
 
     @Override
     public void onDestroy() {
@@ -96,14 +88,6 @@ public class NotificationListenerService extends android.service.notification.No
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand");
-/*        String app=intent.getPackage();
-//        if(app.contains("com.tumuyan.notification") ){ }
-            int cmd_read=intent.getIntExtra("cmd_read",0);
-            if (cmd_read==1){
-                mode_read=true;
-            }else if(cmd_read==2){
-                mode_read=false;
-            }*/
         msg_count = 0;
         return super.onStartCommand(intent, flags, startId);
     }
@@ -122,7 +106,6 @@ public class NotificationListenerService extends android.service.notification.No
             Class innerClazz[] = RemoteViews.class.getDeclaredClasses();
             for (Class cls : innerClazz) {
                 if ("ReflectionAction".equals(cls.getSimpleName())) {
-                    classAction = cls;
                     Log.i("" + msg_count + " any 0c", "get private class - ReflectionAction()");
 
                     filedMethod = cls.getDeclaredField("methodName");
@@ -155,14 +138,10 @@ public class NotificationListenerService extends android.service.notification.No
         }
     }
 
-    private Field filedValue, filedMethod, filedmActions;
-    private Class classAction;
-
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         super.onNotificationPosted(sbn);
-       // if(ttsInit) return;
 
         msg_count++;
         Log.i(TAG, "onNotificationPosted");
@@ -204,7 +183,7 @@ public class NotificationListenerService extends android.service.notification.No
                                 //  由于收到短信时，获取的是spannableString 造成错误。故暂时使用如下方法
                                 String value = ""+ (filedValue.get(o));
                                 if (null == value) continue;
-                                if (value.matches("null")) continue;
+                                if (value.equals("null")) continue;
                                 if(value.matches("\\s+")) continue;
                                 string_nText += value + "\n";
                                 list_nText.add(value);
@@ -227,8 +206,6 @@ public class NotificationListenerService extends android.service.notification.No
                 }
             }
         }
-
-//        DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time));
 
         if (!null_text && !packageName.contains("com.tumuyan.notification")) {
             title = title.trim();
@@ -287,50 +264,6 @@ public class NotificationListenerService extends android.service.notification.No
     }
 
 
-    private String TextTool_num2words(String input){
-        // 从文本数字混合转换为汉字。通过这种方式纠正数字读音，避免ED2 读为ED two 支持前后缀，但是如果出现两段数字，无法正确解析
-        String number=input.replaceAll("[^0-9]*","");
-        String words="";
-        switch (number){
-            case "0":
-                words="零";
-                break;
-            case "1":
-                words="一";
-                break;
-            case "2":
-                words="二";
-                break;
-            case "3":
-                words="三";
-                break;
-            case "4":
-                words="四";
-                break;
-            case "5":
-                words="五";
-                break;
-            case "6":
-                words="六";
-                break;
-            case "7":
-                words="七";
-                break;
-            case "8":
-                words="八";
-                break;
-            case "9":
-                words="九";
-                break;
-            default:
-                Log.w("TextTool_num2words","oped error -"+number+"-"+words);
-
-        }
-
-        return input.replace(number,words);
-
-    }
-
     private Pattern patterMusicOriginal=Pattern.compile("《[^《》]+》(\\s)?(第[0-9一二三四五六七八九十零壹贰叁肆伍陆柒]+季)?(\\s)?(OP|ED|片头|片头曲|主题曲|角色歌|OST|片尾|片尾曲|插入歌)?(\\d+)?");
     private Pattern patternMusicOPED=Pattern.compile("(OP|ED)(\\d+)");
 
@@ -339,6 +272,7 @@ public class NotificationListenerService extends android.service.notification.No
     private boolean new_speaker;
 
     private boolean remove_repeat(String s){
+        // 普通消息去重，目前只用在短信上了。
         if(list_OldBook.contains(s)){
             return true;
         }
@@ -353,6 +287,11 @@ public class NotificationListenerService extends android.service.notification.No
         //避免解锁时重新绘制ui导致的短信重复播报。其他app待添加
         if(pkg.matches(".*mms")){
             if(remove_repeat(title+text)){
+                if(title.length()>0){
+                    text=text.replaceFirst("^[\\[【]?"+title+"[\\]】]?","")
+                            .replaceFirst("[\\[【]?"+title+"[\\]】]?$","");
+                    return title+","+text;
+                }
                 return "";
             }
         }
