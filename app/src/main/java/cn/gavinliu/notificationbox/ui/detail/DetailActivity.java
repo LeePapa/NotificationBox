@@ -177,6 +177,10 @@ public class DetailActivity extends AppCompatActivity {
                 ImageButtonSave2.setVisibility(View.GONE);
                 ImageButtonSave3.setVisibility(View.VISIBLE);
 
+        }else{
+            // 打开后显示设置界面
+            ViewMessageBlackList.setVisibility(View.VISIBLE);
+            ViewMessageQuery.setVisibility(View.GONE);
         }
 
     }

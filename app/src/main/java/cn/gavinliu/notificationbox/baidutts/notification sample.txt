@@ -1,0 +1,60 @@
+am startservice -n com.tumuyan.notificationreader/cn.gavinliu.notificationbox.service.NotificationListenerService
+
+
+01-01 12:07:34.917 13933-13945/com.tumuyan.notificationreader.debug:remote I/anysis: package:com.xiaomi.xmsf
+     grop:class android.app.Notification
+    Notification(pri=-2 contentView=com.xiaomi.xmsf/0x1090085 vibrate=null sound=null defaults=0x0 flags=0x2 color=0x00000000 vis=PRIVATE)
+
+com.tencent.mobileqq
+     grop:class android.app.Notification
+    Notification(pri=1 contentView=com.tencent.mobileqq/0x1090085 vibrate=[] sound=null tick defaults=0x0 flags=0x10 color=0x00000000 vis=PRIVATE)
+
+cn.nubia.mms
+     grop:class android.app.Notification
+    Notification(pri=0 contentView=cn.nubia.mms/0x7f0400a3 vibrate=null sound=null defaults=0x4 flags=0x11 color=0x00000000 category=msg groupKey=Notify sortKey=30 vis=PRIVATE)
+
+com.netease.cloudmusic
+     grop:class android.app.Notification
+    Notification(pri=2 contentView=com.netease.cloudmusic/0x7f04041f vibrate=null sound=null tick defaults=0x0 flags=0x62 color=0x00000000 vis=PUBLIC)
+
+
+
+I/any 0etrue: setText Sundaland of mind
+I/any 0etrue: setText tokyo blue weeps - What Happened in Yesterday
+I/any 0etrue: setText Sundaland of mind
+I/any 0etrue: setText tokyo blue weeps - What Happened in Yesterday
+I/any 0etrue: setText null
+I/any 0etrue: setText null
+I/any 0etrue: setText null
+I/any 0etrue: setText Mi Push running
+I/any 0etrue: setText Sundaland of mind
+I/any 0etrue: setText tokyo blue weeps - What Happened in Yesterday
+I/any 0etrue: setText Sundaland of mind
+I/any 0etrue: setText tokyo blue weeps - What Happened in Yesterday
+I/any 0etrue: setText Sundaland of mind
+I/any 0etrue: setText tokyo blue weeps - What Happened in Yesterday
+I/any 0etrue: setText null
+I/any 0etrue: setText null
+I/any 0etrue: setText null
+I/any 0etrue: setText Mi Push running
+
+僕ら、駆け行く空へ 。剧场版《旋风管家! 天堂是一个位于地球上的地方》ED)。  山崎はるか
+
+
+
+1-06 16:40:20.696 26109-26121/com.tumuyan.notificationreader.debug:remote I/63 any 0e: 红豆
+    方大同
+01-06 16:40:20.702 26109-26121/com.tumuyan.notificationreader.debug:remote W/NLS: com.tencent.qqmusic Package命中：红豆: 方大同
+01-06 16:40:21.374 26109-26121/com.tumuyan.notificationreader.debug:remote I/NonBlockSyntherizer: speak text:,红豆,方大同
+01-06 16:40:21.419 26109-26121/com.tumuyan.notificationreader.debug:remote I/64 any 0e: 红豆
+    方大同
+01-06 16:40:21.420 26109-26121/com.tumuyan.notificationreader.debug:remote W/NLS: com.tencent.qqmusic Package命中：红豆: 方大同
+01-06 16:40:21.962 26109-26121/com.tumuyan.notificationreader.debug:remote I/NonBlockSyntherizer: speak text:,红豆,方大同
+01-06 16:40:21.985 26109-26121/com.tumuyan.notificationreader.debug:remote I/65 any 0e: 红豆
+    方大同
+01-06 16:40:21.987 26109-26121/com.tumuyan.notificationreader.debug:remote W/NLS: com.tencent.qqmusic Package命中：红豆: 方大同
+01-06 16:40:22.525 26109-26121/com.tumuyan.notificationreader.debug:remote I/NonBlockSyntherizer: speak text:,红豆,方大同
+01-06 16:40:22.555 26109-26121/com.tumuyan.notificationreader.debug:remote I/66 any 0e: 红豆
+    方大同
+01-06 16:40:22.556 26109-26121/com.tumuyan.notificationreader.debug:remote W/NLS: com.tencent.qqmusic Package命中：红豆: 方大同
+01-06 16:40:23.086 26109-26121/com.tumuyan.notificationreader.debug:remote I/NonBlockSyntherizer: speak text:,红豆,方大同

@@ -110,8 +110,8 @@ public class imTextBook {
         if ("QQ".equals(titleStr)) {
             Log.w("detect qq","match");
             if (textStr.contains("QQ正在后台运行")) return;
-            if (textStr.matches("有\\s*(\\d+)\\s*个联系人给你发过来(\\d+)条新消息")) {
-                out_text = textStr.replaceFirst("有\\s*(\\d+)\\s*个联系人给你发过来(\\d+)条新消息", "q-q:收到$1个联系人的$2条消息");
+            if (textStr.matches("有\\s*\\d+\\s*个联系人给你发过来\\d+条新消息")) {
+                out_text = textStr.replaceFirst("有(\\s*)(\\d+)(\\s*)个联系人给你发过来(\\d+)条新消息", "q-q:收到$2个联系人的$4条消息");
                 Log.w("detect qq","match2");
                 return;
             }

@@ -35,6 +35,7 @@ import cn.gavinliu.notificationbox.model.AppInfo;
 import cn.gavinliu.notificationbox.model.NotificationInfo;
 import cn.gavinliu.notificationbox.msg.TextBook;
 import cn.gavinliu.notificationbox.msg.imTextBook;
+import cn.gavinliu.notificationbox.msg.musicTextBook;
 import cn.gavinliu.notificationbox.ui.detail.DetailActivity;
 import cn.gavinliu.notificationbox.ui.main.MainContract;
 import cn.gavinliu.notificationbox.utils.DbUtils;
@@ -65,19 +66,30 @@ public class NotificationListenerService extends android.service.notification.No
     }
 
     ttsProxy ttsProxy;
+    boolean ttsInit=true;
 
     @Override
     public void onCreate() {
         super.onCreate();
         //  toggleNotificationListenerService();
         ttsProxy = new ttsProxy(getApplicationContext());
+        //   init.start();
         Log.i(TAG, "onCreate");
     }
+
+    Thread init=new Thread(new Runnable() {
+        @Override
+        public void run() {
+            ttsProxy = new ttsProxy(getApplicationContext());
+            ttsInit=false;
+        }
+    });
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ttsProxy.release();
         Log.i(TAG, "onDestroy");
     }
 
@@ -150,6 +162,7 @@ public class NotificationListenerService extends android.service.notification.No
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         super.onNotificationPosted(sbn);
+       // if(ttsInit) return;
 
         msg_count++;
         Log.i(TAG, "onNotificationPosted");
@@ -191,7 +204,8 @@ public class NotificationListenerService extends android.service.notification.No
                                 //  由于收到短信时，获取的是spannableString 造成错误。故暂时使用如下方法
                                 String value = ""+ (filedValue.get(o));
                                 if (null == value) continue;
-                                if (value.replaceAll("\\s", "").length() < 1) continue;
+                                if (value.matches("null")) continue;
+                                if(value.matches("\\s+")) continue;
                                 string_nText += value + "\n";
                                 list_nText.add(value);
                             }
@@ -236,6 +250,13 @@ public class NotificationListenerService extends android.service.notification.No
         mode_read = read.getBoolean("mode_read", true);
         Log.w("get readmode", "" + mode_read);
         if(!mode_read) return;
+
+        if(text.matches("[^\n]{1,50}正在后台运行"))
+            return ;
+
+        if(text.equals("触摸即可了解详情或停止应用。"))
+            return ;
+
         long time=System.currentTimeMillis();
 
         List<AppInfo> blackList = DbUtils.getApp();
@@ -254,7 +275,10 @@ public class NotificationListenerService extends android.service.notification.No
                 if (matchsMessage(packageName, com_msg)) {
                     ttsProxy.read(getTextBook(title, text, packageName),new_speaker);
                     DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, 1));
+                }else {
+                    DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, -1));
                 }
+
                 return;
             }
         }
@@ -307,12 +331,11 @@ public class NotificationListenerService extends android.service.notification.No
 
     }
 
-
     private Pattern patterMusicOriginal=Pattern.compile("《[^《》]+》(\\s)?(第[0-9一二三四五六七八九十零壹贰叁肆伍陆柒]+季)?(\\s)?(OP|ED|片头|片头曲|主题曲|角色歌|OST|片尾|片尾曲|插入歌)?(\\d+)?");
     private Pattern patternMusicOPED=Pattern.compile("(OP|ED)(\\d+)");
 
 
-    private TextBook old_book;
+    private TextBook old_im_book,old_music_book;
     private boolean new_speaker;
 
     private boolean remove_repeat(String s){
@@ -326,8 +349,6 @@ public class NotificationListenerService extends android.service.notification.No
     private String getTextBook(String title, String text, String pkg) {
 
         new_speaker=false;
-        if(text.matches(".{1,50}正在后台运行"))
-            return "";
 
         //避免解锁时重新绘制ui导致的短信重复播报。其他app待添加
         if(pkg.matches(".*mms")){
@@ -337,9 +358,21 @@ public class NotificationListenerService extends android.service.notification.No
         }
 
         new_speaker=true;
+        if(pkg.matches(".*music")){
+            if(pkg.equals("com.netease.cloudmusic"))
+                text=text.substring(0, text.indexOf(" - "));
+            musicTextBook mu=new musicTextBook(title,text,pkg);
+            old_music_book=mu.getTextBook(old_music_book);
+            return mu.getString();
+        }
+
         switch (pkg) {
-            case "com.netease.cloudmusic":
-                Matcher m=patterMusicOriginal.matcher(title);
+  /*             case "com.netease.cloudmusic":
+                musicTextBook mu=new musicTextBook(title,text.substring(0, text.indexOf(" - ")),pkg);
+                old_music_book=mu.getTextBook(old_music_book);
+                return mu.getString();
+
+             Matcher m=patterMusicOriginal.matcher(title);
                 String original="";
 
                 if(m.find()){
@@ -352,7 +385,26 @@ public class NotificationListenerService extends android.service.notification.No
                     original+="，"+OPED;
                 }
 
-                return title + original +"。"+  text.substring(0, text.indexOf(" - "));
+
+                String[] song_tag=title.split("[()~]");
+                String new_title="";
+                for(String tag:song_tag){
+                    String s=tag.replaceAll("(\\s|_)+"," ");
+                    if(s.contains(" "))
+                    {
+                        if(s.replaceAll("\\s","").matches("[A-Z]+")){
+                            //如果全部大写了，那么有可能是错误的拼写，需要转换小写以免误读
+                            new_title+=s.toLowerCase();
+                            continue;
+                        }
+                    }
+                    if(s.replace(" ","").length()>0)
+                        new_title+="，"+s;
+                }
+                                return new_title + original +"。"+  text.substring(0, text.indexOf(" - "));
+                */
+
+
 
 /*
 
@@ -365,23 +417,23 @@ public class NotificationListenerService extends android.service.notification.No
 
             case "com.tencent.mm":{
                 imTextBook im=new imTextBook(title,text.replaceFirst("^\\[\\d+条\\]",""),":");
-                new_speaker=im.isDifferentSpeaker(old_book);
-                old_book=im.getTextBook();
+                new_speaker=im.isDifferentSpeaker(old_im_book);
+                old_im_book=im.getTextBook();
                 return  im.getString();
             }
 
 
             case "com.tencent.mobileqq":{
                 imTextBook im=new imTextBook(title.replaceFirst("\\(\\d+条新消息\\)$",""),text,":");
-                new_speaker=im.isDifferentSpeaker(old_book);
-                old_book=im.getTextBook();
+                new_speaker=im.isDifferentSpeaker(old_im_book);
+                old_im_book=im.getTextBook();
                 return  im.getString();
             }
 
         }
 
 
-        return title+" "+text;
+        return title+"，"+text;
     }
 
 

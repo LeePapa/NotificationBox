@@ -93,6 +93,10 @@ public class ttsProxy {
         initialTts();
     }
 
+    public void release(){
+        synthesizer.release();
+    }
+
 
     private int speaker = 0;
 
