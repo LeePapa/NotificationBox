@@ -58,3 +58,5 @@ I/any 0etrue: setText Mi Push running
     方大同
 01-06 16:40:22.556 26109-26121/com.tumuyan.notificationreader.debug:remote W/NLS: com.tencent.qqmusic Package命中：红豆: 方大同
 01-06 16:40:23.086 26109-26121/com.tumuyan.notificationreader.debug:remote I/NonBlockSyntherizer: speak text:,红豆,方大同
+
+不朽之罪,ft.双笙,重编曲,玄觞/双笙

@@ -51,4 +51,10 @@
     <string name="ok">确认</string>
     <string name="channel">取消</string>
     <string name="delete_message">确认删除这些记录？</string>
+    <string name="use_hci_cloud">调用灵云SDK（捷通华声在线接口）朗读韩语、日语、德语、法语的歌名\n此选项在退出应用一次后才会生效</string>
+    <string name="read_lang2">朗读更多语种</string>
+    <string name="mode_toast">显示吐司消息</string>
+    <string name="mode_toast_detail">通过toast消息展示接收消息的状态，以便查看拦截状态和进一步的调试\n此选项在退出应用一次后才会生效</string>sav
+    <string name="save_setting_detail">如果不点击此按钮，上述两个设置选项在退出应用一次后才会生效</string>
+    <string name="save_setting">保存设置</string>
 </resources>

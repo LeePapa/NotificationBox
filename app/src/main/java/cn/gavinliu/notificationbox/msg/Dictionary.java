@@ -8,6 +8,32 @@ import static java.util.Arrays.asList;
 
 public class Dictionary {
 
+
+
+   static public String HciLanguageString(int lang){
+      switch (lang){
+         case 1:
+            // 日语
+            return "tts.cloud.kyoko";
+         case 2:
+            // 德语
+            return "tts.cloud.anna";
+         case 3:
+            // 法语
+            return  "tts.cloud.audrey-ml";
+         case 4:
+            // 韩语
+            return "tts.cloud.narae";
+
+         default:
+            return "tts.cloud.haobo";
+
+      }
+
+
+
+   }
+
    static public ArrayList<String> dic_msg_tag=new ArrayList<String>(asList(
            "[图片]","[表情图片]","[魔法表情]","[表情]"
    ));
@@ -68,6 +94,188 @@ public class Dictionary {
       return input.replace(number,words);
 
    }
+
+   static public ArrayList<String> dic_char_german=new ArrayList<>(asList(
+           "Ä","ä","Ö","ö","Ü","ü","ß"
+   ));
+
+   static public ArrayList<String> dic_char_farnce=new ArrayList<>(asList(
+           //闭音符（áéó）和软音符（ç）：先按’（单引号），再按字母
+           "á","é","ó"
+           ,"ç"
+           //开音符（àèò）：先按`（数字1旁边那个）然后按字母
+           ,"à","è","ò"
+           //长音符（âêô）：这个麻烦一点，shift+6（也就是^），然后按字母
+           ,"â","ê","ô"
+           //分音符（ö）：shift+’（也就是双引号），然后按字母
+           ,"ö"
+           , "ê","é","è","ù"
+   ));
+
+/*
+   通常用下面这段javascript正则表达式即可验证是否韩文:　　
+           /^([\uAC00-\uD7AF])*$/gi　　
+*/
+
+   static public ArrayList<String> dic_char_japanese=new ArrayList<>(asList(
+           "ァ",
+           "ア",
+           "あ",
+           "ィ",
+           "イ",
+           "い",
+           "ゥ",
+           "ウ",
+           "う",
+           "ェ",
+           "エ",
+           "え",
+           "ォ",
+           "オ",
+           "お",
+           "カ",
+           "か",
+           "ガ",
+           "が",
+           "キ",
+           "き",
+           "ギ",
+           "ぎ",
+           "ク",
+           "く",
+           "グ",
+           "ぐ",
+           "ケ",
+           "け",
+           "ゲ",
+           "げ",
+           "コ",
+           "こ",
+           "ゴ",
+           "ご",
+           "サ",
+           "さ",
+           "ザ",
+           "ざ",
+           "シ",
+           "し",
+           "ジ",
+           "じ",
+           "ス",
+           "す",
+           "ズ",
+           "ず",
+           "セ",
+           "せ",
+           "ゼ",
+           "ぜ",
+           "ソ",
+           "そ",
+           "ゾ",
+           "ぞ",
+           "タ",
+           "た",
+           "ダ",
+           "だ",
+           "チ",
+           "ち",
+           "ヂ",
+           "ぢ",
+           "ッ",
+           "ツ",
+           "つ",
+           "ヅ",
+           "づ",
+           "テ",
+           "て",
+           "デ",
+           "で",
+           "ト",
+           "と",
+           "ド",
+           "ど",
+           "ナ",
+           "な",
+           "ニ",
+           "に",
+           "ヌ",
+           "ぬ",
+           "ネ",
+           "ね",
+           "ノ",
+           "の",
+           "ハ",
+           "は",
+           "バ",
+           "ば",
+           "パ",
+           "ぱ",
+           "ヒ",
+           "ひ",
+           "ビ",
+           "び",
+           "ピ",
+           "ぴ",
+           "フ",
+           "ふ",
+           "ブ",
+           "ぶ",
+           "プ",
+           "ぷ",
+           "ヘ",
+           "へ",
+           "ベ",
+           "べ",
+           "ペ",
+           "ぺ",
+           "ホ",
+           "ほ",
+           "ボ",
+           "ぼ",
+           "ポ",
+           "ぽ",
+           "マ",
+           "ま",
+           "ミ",
+           "み",
+           "ム",
+           "む",
+           "メ",
+           "め",
+           "モ",
+           "も",
+           "ャ",
+           "ゃ",
+           "ヤ",
+           "や",
+           "ュ",
+           "ゅ",
+           "ユ",
+           "ゆ",
+           "ョ",
+           "ょ",
+           "ヨ",
+           "よ",
+           "ラ",
+           "ら",
+           "リ",
+           "り",
+           "ル",
+           "る",
+           "レ",
+           "れ",
+           "ロ",
+           "ろ",
+           "ワ",
+           "わ",
+           "ヲ",
+           "を",
+           "ン",
+           "ん",
+           "ー"
+   ));
+
+
 
 
    static public ArrayList<String> dic_pinyin= new ArrayList<String>(asList(

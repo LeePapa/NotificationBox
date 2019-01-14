@@ -5,6 +5,10 @@ public class TextBook {
     public long time;
     public int count=0;
 
+    public TextBook(){
+        time=System.currentTimeMillis();
+    }
+
     public TextBook(String group, String sender, String mainText, String ext) {
         time = System.currentTimeMillis();
         this.group = group;

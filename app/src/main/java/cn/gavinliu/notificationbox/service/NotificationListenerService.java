@@ -10,8 +10,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Looper;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -37,9 +40,9 @@ import cn.gavinliu.notificationbox.msg.TextBook;
 import cn.gavinliu.notificationbox.msg.imTextBook;
 import cn.gavinliu.notificationbox.msg.musicTextBook;
 import cn.gavinliu.notificationbox.ui.detail.DetailActivity;
-import cn.gavinliu.notificationbox.ui.main.MainContract;
 import cn.gavinliu.notificationbox.utils.DbUtils;
 import cn.gavinliu.notificationbox.utils.SettingUtils;
+
 
 /**
  * Created by Gavin on 2016/10/11.
@@ -67,7 +70,6 @@ public class NotificationListenerService extends android.service.notification.No
         Log.i(TAG, "onUnbind");
         return super.onUnbind(intent);
     }
-
 
 
     @Override
@@ -149,7 +151,11 @@ public class NotificationListenerService extends android.service.notification.No
         Notification notification = sbn.getNotification();
         String packageName = sbn.getPackageName();
 
+        // 30s以前的消息全部抛弃
         long time = sbn.getPostTime();
+        if(time+30000<System.currentTimeMillis())
+            return;
+
         String title = notification.extras.getString(Notification.EXTRA_TITLE);
         String text = notification.extras.getString(Notification.EXTRA_TEXT);
 
@@ -174,17 +180,20 @@ public class NotificationListenerService extends android.service.notification.No
 
                 try {
                     ArrayList<?> mActions = (ArrayList<?>) filedmActions.get(notificationView);
+                    if(null==mActions)
+                        return;
+
                     for (Object o : mActions) {
-                      //  if(o instanceof android.widget.RemoteViews$ReflectionAction )
-                        if(!"ReflectionAction".equals(o.getClass().getSimpleName()) ) continue;
+                        //  if(o instanceof android.widget.RemoteViews$ReflectionAction )
+                        if (!"ReflectionAction".equals(o.getClass().getSimpleName())) continue;
                         try {
                             if ("setText".equals((String) (filedMethod.get(o)))) {
-                            //    String value = (String) (filedValue.get(o));
+                                //    String value = (String) (filedValue.get(o));
                                 //  由于收到短信时，获取的是spannableString 造成错误。故暂时使用如下方法
-                                String value = ""+ (filedValue.get(o));
+                                String value = "" + (filedValue.get(o));
                                 if (null == value) continue;
                                 if (value.equals("null")) continue;
-                                if(value.matches("\\s+")) continue;
+                                if (value.matches("\\s+")) continue;
                                 string_nText += value + "\n";
                                 list_nText.add(value);
                             }
@@ -206,11 +215,33 @@ public class NotificationListenerService extends android.service.notification.No
                 }
             }
         }
+        if (packageName.contains("com.tumuyan.notification")) {
+            // 来自本应用的消息不读出，直接执行。
+            switch (text) {
+                case "mode_read_off":
+                    ttsProxy.stop();
+                    break;
+                case "action_stop":
+                    ttsProxy.stop();
+                    break;
+                default:
+                    break;
 
-        if (!null_text && !packageName.contains("com.tumuyan.notification")) {
+            }
+            //执行后擦除消息
+            if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+                cancelNotification(sbn.getKey());
+            } else {
+                cancelNotification(sbn.getPackageName(), sbn.getTag(), sbn.getId());
+            }
+
+        } else if (!null_text) {
             title = title.trim();
             text = text.trim();
-            go_reader(packageName,title,text);
+            if (count(title + text) > 3) {
+                ToastNotification(packageName, title, text, -12);
+            } else
+                go_reader(packageName, title, text);
         }
     }
 
@@ -219,22 +250,97 @@ public class NotificationListenerService extends android.service.notification.No
         super.onNotificationRemoved(sbn);
     }
 
-    ArrayList<String> list_OldBook=new ArrayList<>();
+    ArrayList<String> list_OldBook = new ArrayList<>();
+    ArrayList<String> list_fullText = new ArrayList<>();
 
-    private void go_reader(String packageName,String title,String text) {
+
+    // 针对重复出现的消息进行拦截
+    private int count(String in) {
+        if(in.length()<2 || in.contains("\n"))
+            return -1;
+        if (in.contains("下载")) {
+            int count = 0;
+
+            list_fullText.add(in);
+            if (list_fullText.size() > 8)
+                list_fullText.remove(0);
+            for (String s : list_fullText) {
+                if (s.equals(in))
+                    count++;
+            }
+            return count;
+
+        }
+        return -2;
+
+    }
+
+    // 判断是否在通话状态
+    public boolean isTelephonyCalling() {
+        boolean calling = false;
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (TelephonyManager.CALL_STATE_OFFHOOK == telephonyManager.getCallState() || TelephonyManager.CALL_STATE_RINGING == telephonyManager.getCallState()) {
+            calling = true;
+        }
+        return calling;
+    }
+
+    private long sleep_for_call = 0;
+
+
+    private void go_reader(String packageName, String title, String text) {
         SharedPreferences read = getSharedPreferences("setting", MODE_MULTI_PROCESS);
         //更新朗读模式
         mode_read = read.getBoolean("mode_read", true);
         Log.w("get readmode", "" + mode_read);
-        if(!mode_read) return;
+        if (!mode_read) {
+            ToastNotification(packageName, title, text, -11);
+            return;
+        }
 
-        if(text.matches("[^\n]{1,50}正在后台运行"))
-            return ;
 
-        if(text.equals("触摸即可了解详情或停止应用。"))
-            return ;
+        Log.i("go_reader", "-" + title + "-,test:-" + text + "-");
 
-        long time=System.currentTimeMillis();
+
+        if (text.matches("[^\n]{1,50}正在后台运行")) {
+            ToastNotification(packageName, title, text, -12);
+            return;
+        }
+
+        if (text.equals("触摸即可了解详情或停止应用。")) {
+            ToastNotification(packageName, title, text, -12);
+            return;
+        }
+
+        if (text.matches("正在下载(:|：)\\s*\\d+%\\s*")) {
+            ToastNotification(packageName, title, text, -12);
+            return;
+        }
+
+        if (isTelephonyCalling()) {
+            Log.i("input inCalling", title + ":" + text);
+            ToastNotification(packageName, title, text, -22);
+            return;
+        }
+
+
+        long time = System.currentTimeMillis();
+
+
+        if ((title + text).matches("(\\d+:)+\\d{1,2}") || text.matches("(\\d+:)+\\d{1,2}")) {
+            //针对时间更新。比如QQ电话是5秒间隔的时间刷新
+            Log.i("input is time", title + ":" + text);
+            sleep_for_call = time + 6000;
+            ttsProxy.stop();
+            ToastNotification(packageName, title, text, -21);
+            return;
+        }
+
+        if (time < sleep_for_call) {
+            Log.i("sleep for call", title + ":" + text);
+            ToastNotification(packageName, title, text, -22);
+            return;
+        }
 
         List<AppInfo> blackList = DbUtils.getApp();
 
@@ -244,64 +350,124 @@ public class NotificationListenerService extends android.service.notification.No
                 Log.w(TAG, packageName + " Package命中：" + title + ": " + text);
 
                 String com_msg;
-                if(title.length()>0)
-                     com_msg=title;
+                if (title.length() > 0)
+                    com_msg = title;
                 else
-                     com_msg=text.substring(0,text.indexOf("\n"));
+                    com_msg = text.substring(0, text.indexOf("\n"));
 
                 if (matchsMessage(packageName, com_msg)) {
-                    ttsProxy.read(getTextBook(title, text, packageName),new_speaker);
+                    ttsProxy.read(getTextBook(title, text, packageName), new_speaker);
                     DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, 1));
-                }else {
+                    ToastNotification(packageName, title, text, 1);
+                } else {
                     DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, -1));
+                    ToastNotification(packageName, title, text, -1);
                 }
 
                 return;
             }
         }
         DbUtils.saveNotification(new NotificationInfo(packageName, title, text, time, 0));
+        ToastNotification(packageName, title, text, 0);
+    }
+
+    // toast debug使用，显示捕捉到的消息和状态。
+    public void ToastNotification(String pkgName, String title, String text, int state) {
+        if (!SettingUtils.getInstance().isModeToast())
+            return;
+
+        String s;
+        if (null == pkgName)
+            s = "\nTitle" + title + "\nText:" + text;
+        else
+            s = "\n应用包名" + pkgName + "\nTitle" + title + "\nText:" + text;
+        switch (state) {
+            case -1:
+                s = "应用列表匹配但是消息不匹配" + s;
+                break;
+            case 1:
+                s = "消息匹配" + s;
+                break;
+            case 0:
+                s = "发送消息的应用不再列表中" + s;
+                break;
+            case -11:
+                s = "朗读开关已关闭" + s;
+                break;
+            case -12:
+                s = "不建议被朗读的消息" + s;
+                break;
+            case -21:
+                s = "此消息触发通话模式" + s;
+                break;
+            case -22:
+                s = "通话状态自动关闭朗读" + s;
+                break;
+        }
+
+        final String s2 = s;
+
+        new Thread() {
+            public void run() {
+                Looper.prepare();
+                Toast.makeText(getApplicationContext(), s2, Toast.LENGTH_SHORT).show();
+                Log.i("toast", s2);
+                Looper.loop();// 进入loop中的循环，查看消息队列
+            }
+
+            ;
+        }.start();
 
     }
 
 
-    private Pattern patterMusicOriginal=Pattern.compile("《[^《》]+》(\\s)?(第[0-9一二三四五六七八九十零壹贰叁肆伍陆柒]+季)?(\\s)?(OP|ED|片头|片头曲|主题曲|角色歌|OST|片尾|片尾曲|插入歌)?(\\d+)?");
-    private Pattern patternMusicOPED=Pattern.compile("(OP|ED)(\\d+)");
+    private Pattern patterMusicOriginal = Pattern.compile("《[^《》]+》(\\s)?(第[0-9一二三四五六七八九十零壹贰叁肆伍陆柒]+季)?(\\s)?(OP|ED|片头|片头曲|主题曲|角色歌|OST|片尾|片尾曲|插入歌)?(\\d+)?");
+    private Pattern patternMusicOPED = Pattern.compile("(OP|ED)(\\d+)");
 
 
-    private TextBook old_im_book,old_music_book;
+    private TextBook old_im_book = new TextBook(), old_music_book = new TextBook();
     private boolean new_speaker;
 
-    private boolean remove_repeat(String s){
-        // 普通消息去重，目前只用在短信上了。
-        if(list_OldBook.contains(s)){
+    // 普通类型需要长态保存以免重复播报的内容，目前只用在短信上了。
+    private boolean remove_repeat(String s) {
+
+        if (list_OldBook.contains(s)) {
             return true;
         }
-        list_OldBook.add(0,s);
+        list_OldBook.add(0, s);
         return false;
     }
 
+    // 把消息转换为稿件
     private String getTextBook(String title, String text, String pkg) {
 
-        new_speaker=false;
+        new_speaker = false;
 
-        //避免解锁时重新绘制ui导致的短信重复播报。其他app待添加
-        if(pkg.matches(".*mms")){
-            if(remove_repeat(title+text)){
-                if(title.length()>0){
-                    text=text.replaceFirst("^[\\[【]?"+title+"[\\]】]?","")
-                            .replaceFirst("[\\[【]?"+title+"[\\]】]?$","");
-                    return title+","+text;
+        if (pkg.matches(".*mms")) {
+            //避免解锁时重新绘制ui导致的短信重复播报。其他app待添加
+            // if (remove_repeat(title + text))
+            {
+                if (title.length() > 0) {
+                    text = text.replaceFirst("^[\\[【]?" + title + "[\\]】]?", "")
+                            .replaceFirst("[\\[【]?" + title + "[\\]】]?$", "");
+                    return title + "," + text;
                 }
                 return "";
             }
         }
 
-        new_speaker=true;
-        if(pkg.matches(".*music")){
-            if(pkg.equals("com.netease.cloudmusic"))
-                text=text.substring(0, text.indexOf(" - "));
-            musicTextBook mu=new musicTextBook(title,text,pkg);
-            old_music_book=mu.getTextBook(old_music_book);
+        new_speaker = true;
+        if (pkg.matches(".*music")) {
+            if (pkg.equals("com.netease.cloudmusic"))
+                text = text.substring(0, text.indexOf(" - "));
+            musicTextBook mu = new musicTextBook(title, text, pkg);
+            old_music_book = mu.getTextBook(old_music_book);
+            if(mu.notNeedRead())
+                return "";
+            if (SettingUtils.getInstance().readLang2() && mu.has_2nd_language()) {
+                ttsProxy.read(mu.getList_MixedText());
+                return "";
+            }
             return mu.getString();
         }
 
@@ -354,25 +520,25 @@ public class NotificationListenerService extends android.service.notification.No
 */
 
 
-            case "com.tencent.mm":{
-                imTextBook im=new imTextBook(title,text.replaceFirst("^\\[\\d+条\\]",""),":");
-                new_speaker=im.isDifferentSpeaker(old_im_book);
-                old_im_book=im.getTextBook();
-                return  im.getString();
+            case "com.tencent.mm": {
+                imTextBook im = new imTextBook(title, text.replaceFirst("^\\[\\d+条\\]", ""), ":");
+                new_speaker = im.isDifferentSpeaker(old_im_book);
+                old_im_book = im.getTextBook();
+                return im.getString();
             }
 
 
-            case "com.tencent.mobileqq":{
-                imTextBook im=new imTextBook(title.replaceFirst("\\(\\d+条新消息\\)$",""),text,":");
-                new_speaker=im.isDifferentSpeaker(old_im_book);
-                old_im_book=im.getTextBook();
-                return  im.getString();
+            case "com.tencent.mobileqq": {
+                imTextBook im = new imTextBook(title.replaceFirst("\\(\\d+条新消息\\)$", ""), text, ":");
+                new_speaker = im.isDifferentSpeaker(old_im_book);
+                old_im_book = im.getTextBook();
+                return im.getString();
             }
 
         }
 
 
-        return title+"，"+text;
+        return title + "，" + text;
     }
 
 

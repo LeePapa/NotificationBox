@@ -28,6 +28,13 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/action_stop"
+        android:icon="@drawable/ic_clear_all_24dp"
+        android:orderInCategory="100"
+        android:title="stop"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/mode_read_on"
         android:icon="@drawable/ic_volume_up_white"
         android:orderInCategory="100"

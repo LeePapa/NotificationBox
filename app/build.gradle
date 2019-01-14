@@ -9,7 +9,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 24
         versionCode 9
-        versionName "2.6R2"
+        versionName "2.6R3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -33,17 +33,15 @@ android {
         }
     }
 
-/*
 
     splits {
         abi {
             enable true
             reset()
-            include 'armeabi', 'arm64-v8a'
+            include 'armeabi', 'arm64-v8a','armeabi-v7a',"x86","x86_64"
             universalApk true
         }
     }
-*/
 
 }
 
@@ -53,7 +51,7 @@ dependencies {
     compile 'com.android.support:preference-v7:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
-
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
+    compile files('libs/hcicloud-5.0.jar')
 }

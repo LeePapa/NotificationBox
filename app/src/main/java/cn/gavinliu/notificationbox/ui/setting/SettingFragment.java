@@ -12,6 +12,7 @@ import android.widget.Toast;
 import cn.gavinliu.notificationbox.R;
 import cn.gavinliu.notificationbox.ui.detail.DetailActivity;
 import cn.gavinliu.notificationbox.utils.DbUtils;
+import cn.gavinliu.notificationbox.utils.SettingUtils;
 
 /**
  * Created by Gavin on 2016/10/25.
@@ -37,6 +38,15 @@ public class SettingFragment extends PreferenceFragmentCompat {
             }
         });
 
+/*        findPreference("save_setting").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                SettingUtils.getInstance().reload();
+                Toast.makeText(getContext(),"Saved.",Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });*/
+
         findPreference("rebuildRecod").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -56,6 +66,8 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+
+
 
         findPreference("openSource").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

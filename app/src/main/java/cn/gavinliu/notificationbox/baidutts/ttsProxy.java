@@ -12,12 +12,10 @@ import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
 
 import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import cn.gavinliu.notificationbox.baidutts.control.InitConfig;
 import cn.gavinliu.notificationbox.baidutts.control.MySyntherizer;
@@ -25,7 +23,9 @@ import cn.gavinliu.notificationbox.baidutts.control.NonBlockSyntherizer;
 import cn.gavinliu.notificationbox.baidutts.listener.UiMessageListener;
 import cn.gavinliu.notificationbox.baidutts.util.AutoCheck;
 import cn.gavinliu.notificationbox.baidutts.util.OfflineResource;
-import cn.gavinliu.notificationbox.msg.imTextBook;
+import cn.gavinliu.notificationbox.hcicloud.HciCloudProxy;
+
+import cn.gavinliu.notificationbox.utils.SettingUtils;
 
 public class ttsProxy {
 
@@ -41,20 +41,18 @@ public class ttsProxy {
     protected String secretKey = "MhZMCxDbbuy8Rf5YpDnT92hFIv8PST4Q";
 
 
-
     /**
      * 判断当前应用是否是debug状态
      */
 
-   private boolean isApkInDebug(Context context) {
+    private boolean isApkInDebug(Context context) {
         try {
             ApplicationInfo info = context.getApplicationInfo();
-            boolean debug=( (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
-            if(debug)
-            {
-                 appId = "15347797";
-                 appKey = "hxGdw2a7uWcBmViONsgQ3ghD";
-                 secretKey = "yPxIj90jbghFnyd0FhcjWNH7dYlr0kEh";
+            boolean debug = ((info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
+            if (debug) {
+                appId = "15347797";
+                appKey = "hxGdw2a7uWcBmViONsgQ3ghD";
+                secretKey = "yPxIj90jbghFnyd0FhcjWNH7dYlr0kEh";
 
             }
 
@@ -77,12 +75,6 @@ public class ttsProxy {
     // 主控制类，所有合成控制方法从这个类开始
     protected MySyntherizer synthesizer;
 
-    protected static String DESC = "请先看完说明。之后点击“合成并播放”按钮即可正常测试。\n"
-            + "测试离线合成功能需要首次联网。\n"
-            + "纯在线请修改代码里ttsMode为TtsMode.ONLINE， 没有纯离线。\n"
-            + "本Demo的默认参数设置为wifi情况下在线合成, 其它网络（包括4G）使用离线合成。 在线普通女声发音，离线男声发音.\n"
-            + "合成可以多次调用，SDK内部有缓存队列，会依次完成。\n\n";
-
     Handler mainHandler;
     Context context;
 
@@ -93,10 +85,13 @@ public class ttsProxy {
         initialTts();
     }
 
-    public void release(){
+    public void release() {
         synthesizer.release();
     }
 
+    public void stop() {
+        synthesizer.stop();
+    }
 
     private int speaker = 0;
 
@@ -134,20 +129,30 @@ public class ttsProxy {
     }
 
 
-
-
+    public void read(LinkedList<String[]> list){
+        hciCloudProxy.speak(list);
+    }
 
 
     public void read(String s, boolean new_speaker) {
-        if(null==s)
+        if (null == s)
             return;
-        if(s.length()<1)
+        if (s.length() < 1)
             return;
+/*
+
+
+        if (SettingUtils.getInstance().readLang2()) {
+          hciCloudProxy.speak(s);
+            //  hciProxy.speak(s);
+            return;
+        }
+*/
 
         if (new_speaker)
             setSpeaker(true);
         int result = -1;
-         if (s.length() < ClipLength) {
+        if (s.length() < ClipLength) {
             result = synthesizer.speak(s);
         } else {
             String clip = getClipString(s);
@@ -243,7 +248,20 @@ public class ttsProxy {
 
         });
         synthesizer = new NonBlockSyntherizer(context, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
+
+
+        // ich-cloud 灵云初始化
+        if (SettingUtils.getInstance().readLang2()) {
+            hciCloudProxy=new HciCloudProxy(context);
+/*            hciProxy =
+                    new hciProxy(context);
+            hciProxy.speak("hi hi hi 测试灵云播放器，测试灵云播放器");*/
+        }
+
     }
+
+
+    private HciCloudProxy hciCloudProxy;
 
     protected void handle(Message msg) {
 /*        int what = msg.what;
@@ -289,7 +307,7 @@ public class ttsProxy {
         // 设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>
         params.put(SpeechSynthesizer.PARAM_SPEAKER, "0");
         // 设置合成的音量，0-9 ，默认 5
-        params.put(SpeechSynthesizer.PARAM_VOLUME, "9");
+        params.put(SpeechSynthesizer.PARAM_VOLUME, "15");
         // 设置合成的语速，0-9 ，默认 5
         params.put(SpeechSynthesizer.PARAM_SPEED, "5");
         // 设置合成的语调，0-9 ，默认 5

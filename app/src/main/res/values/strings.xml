@@ -51,4 +51,10 @@
     <string name="ok">OK</string>
     <string name="channel">Channel</string>
     <string name="delete_message">Delete all these records?</string>
+    <string name="use_hci_cloud">Use hci cloud to read Japanese/France/Korea/German music</string>
+    <string name="read_lang2">Read more language</string>
+    <string name="mode_toast">Toast mode</string>
+    <string name="mode_toast_detail">Show toast message for debug.</string>
+    <string name="save_setting_detail">Click this, or the upper tow item will be applied after exit the application</string>
+    <string name="save_setting">Save setting</string>
 </resources>

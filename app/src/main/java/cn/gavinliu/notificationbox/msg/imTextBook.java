@@ -33,15 +33,24 @@ public class imTextBook {
 //"([A-Za-z][0-9][0-9a-zA-Z]*|[0-9a-z]+[A-Z][0-9a-zA-Z]*)"
 
 
-    private Pattern patternVarify = Pattern.compile("(^|[^0-9a-zA-Z/\\\\])([A-Za-z][0-9]|[0-9a-z]+[A-Z])([0-9a-zA-Z]*)");
+    private Pattern patternVarify = Pattern.compile("(^|[^0-9a-zA-Z/\\\\])([A-Za-z]+[0-9]|[0-9a-z]+[A-Z])([0-9a-zA-Z]*)");
 
 
     // 是否需要切换发音人，并减少旁白
     public boolean isDifferentSpeaker(TextBook old) {
+        boolean time_out = (System.currentTimeMillis()-old.time)>60000;
 
         // 排除轮空
         if (out_text.length() < 1 || null == old)
             return false;
+
+        if(time_out){
+            if(sender.length()>0 && old.sender.equals(sender)){
+                _out_text=out_text;
+                _sender=sender;
+                return false;
+            }
+        }
 
         if (sender.length() > 0 && old.sender.equals(sender)) {
             //同一个人连续发言，不需切换音源，不需再说是谁在发言。
@@ -66,7 +75,6 @@ public class imTextBook {
         _sender = sender;
         _out_text = out_text;
         return true;
-
 
     }
 
@@ -115,8 +123,13 @@ public class imTextBook {
                 Log.w("detect qq","match2");
                 return;
             }
+
+
         }else{
             Log.w("not detect qq","-"+titleStr+"-");
+
+            if(textStr.matches(".+\n正在QQ电话"))
+                return;
         }
 
         String[] in_text = textStr.split(neckStr, 2);
@@ -171,19 +184,45 @@ public class imTextBook {
             // 其他括号中的内容也不在播报了。
             out_text = i2_text.replaceAll("(链接|链接地址|地址)(:|：)?\\s*((ftp|http|https)?://)?\\S+\\.\\S+[0-9A-Za-z:/\\[-\\]_#\\?=\\.&]*", "链接");
 
-            Matcher m = patternVarify.matcher(out_text);
 
+            String[] clip_mixed_str_num=out_text.split("[^/\\.\\\\0-9a-zA-Z]+");
 
-            while (m.find()) {
-                String code = m.group().replaceFirst("[^0-9a-zA-Z]", "");
-                if (code.length() > 4 && code.length() < 10)
-                    out_text = out_text.replace(code, code.replaceAll("([0-9a-zA-Z])", "$1 "));
-                //  System.out.println(m.group());
+            for(String clip:clip_mixed_str_num){
+                if(isVarifyCode(clip))
+                    out_text = out_text.replace(clip, clip.replaceAll("([0-9a-zA-Z])", "$1 "));
             }
+        }
+    }
 
 
+    private boolean isVarifyCode(String s){
+        if(s.length()>20 || s.length()<5) return false;
+        if(s.matches(".*[./\\\\].*"))return false;
+
+        char[] chrCharArray=s.toCharArray(); //将字符串变量转换为字符数组
+        int v=0;
+        int t=0;
+
+        for(char c:chrCharArray){
+            int t1=getCharType(c);
+            if(t1!=t){
+                t=t1;
+                v++;
+                    if(v>3)
+                        return true;
+            }
         }
 
+        return false;
+    }
 
+    private int getCharType(char c){
+        if(Character.isDigit( c))
+            return 1;
+        if(Character.isUpperCase(c))
+            return 3;
+        if(Character.isLowerCase(c))
+            return 2;
+        return 0;
     }
 }

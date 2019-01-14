@@ -26,7 +26,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(action_boot)) {
-            Log.d("onReceive:", "Boot system");
+            Log.i("onReceive:", "Boot system");
             Intent startIntent = new Intent(context, NotificationListenerService.class);
             startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //    context.startActivity(startIntent);

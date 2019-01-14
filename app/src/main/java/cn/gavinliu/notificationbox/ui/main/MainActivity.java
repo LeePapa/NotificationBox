@@ -1,6 +1,8 @@
 package cn.gavinliu.notificationbox.ui.main;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -175,16 +177,8 @@ public class MainActivity extends AppCompatActivity {
                 editor.commit();
 
                 Log.w("pkg name for this",getPackageName());
-/*
 
-                Intent mIntent = new Intent();
-                mIntent.setAction("com.pro.testignore.MyService");
-                mIntent.setPackage(getPackageName());
-                Intent eintent = new Intent(getExplicitIntent(this, mIntent));
-
-                startService(eintent);
-
-              */
+                createNotificationCMD("mode_read_on");
                 break;
             }
             case R.id.mode_read_on:{
@@ -193,13 +187,15 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = getSharedPreferences("setting", MODE_MULTI_PROCESS).edit();
                 editor.putBoolean("mode_read",false);
                 editor.commit();
+                createNotificationCMD("mode_read_off");
                 break;
             }
-/*
-            case R.id.action_startservice:{
-                toggleNotificationListenerService();
+
+            case R.id.action_stop:{
+                createNotificationCMD("action_stop");
                 break;
-            }*/
+            }
+
         }
 
 
@@ -214,21 +210,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-/*
-        if (id == R.id.action_startservice) {
-
-            Log.d("onClick:", "Start Service");
-            Intent startIntent = new Intent(this,cn.gavinliu.notificationbox.service.NotificationListenerService.class);
-         //   startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            this.startService(startIntent);
-        }
-
-
-*/
-
-
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    private void createNotificationCMD(String text) {
+
+        Notification.Builder notifyBuilder = new Notification.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setWhen(System.currentTimeMillis())
+                .setContentTitle(getResources().getString(R.string.app_name))
+                .setContentText(text)
+                .setDefaults(Notification.DEFAULT_LIGHTS);
+
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification notification = notifyBuilder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        nm.notify(R.string.app_name, notification);
     }
 
 
