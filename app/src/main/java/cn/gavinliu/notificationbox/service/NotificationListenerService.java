@@ -153,7 +153,7 @@ public class NotificationListenerService extends android.service.notification.No
 
         // 30s以前的消息全部抛弃
         long time = sbn.getPostTime();
-        if(time+30000<System.currentTimeMillis())
+        if (time + 30000 < System.currentTimeMillis())
             return;
 
         String title = notification.extras.getString(Notification.EXTRA_TITLE);
@@ -180,7 +180,7 @@ public class NotificationListenerService extends android.service.notification.No
 
                 try {
                     ArrayList<?> mActions = (ArrayList<?>) filedmActions.get(notificationView);
-                    if(null==mActions)
+                    if (null == mActions)
                         return;
 
                     for (Object o : mActions) {
@@ -256,7 +256,7 @@ public class NotificationListenerService extends android.service.notification.No
 
     // 针对重复出现的消息进行拦截
     private int count(String in) {
-        if(in.length()<2 || in.contains("\n"))
+        if (in.length() < 2 || in.contains("\n"))
             return -1;
         if (in.contains("下载")) {
             int count = 0;
@@ -446,14 +446,22 @@ public class NotificationListenerService extends android.service.notification.No
         if (pkg.matches(".*mms")) {
             //避免解锁时重新绘制ui导致的短信重复播报。其他app待添加
             // if (remove_repeat(title + text))
-            {
-                if (title.length() > 0) {
-                    text = text.replaceFirst("^[\\[【]?" + title + "[\\]】]?", "")
-                            .replaceFirst("[\\[【]?" + title + "[\\]】]?$", "");
-                    return title + "," + text;
-                }
+            if (DbUtils.detNotification(pkg, title, text))
                 return "";
+
+            // 不播放纯手机号
+            if (title.matches("\\d{8,100}"))
+                return text;
+
+            // 去除头尾的无效信息
+            if (title.length() > 0) {
+                text = text.replaceFirst("^[\\[【]?" + title + "[\\]】]?", "")
+                        .replaceFirst("[\\[【]?" + title + "[\\]】]?$", "");
             }
+            // 普通播报
+            return title + "," + text;
+
+
         }
 
         new_speaker = true;
@@ -462,7 +470,7 @@ public class NotificationListenerService extends android.service.notification.No
                 text = text.substring(0, text.indexOf(" - "));
             musicTextBook mu = new musicTextBook(title, text, pkg);
             old_music_book = mu.getTextBook(old_music_book);
-            if(mu.notNeedRead())
+            if (mu.notNeedRead())
                 return "";
             if (SettingUtils.getInstance().readLang2() && mu.has_2nd_language()) {
                 ttsProxy.read(mu.getList_MixedText());

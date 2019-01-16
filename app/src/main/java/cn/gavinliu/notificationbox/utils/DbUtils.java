@@ -39,7 +39,29 @@ public class DbUtils {
         }
     }
 
- */   public static List<NotificationInfo> getNotification(String packageName,String qurey1,String qurey2) {
+
+
+
+
+ */
+
+    public static boolean detNotification(String packageName,String title,String text){
+
+        if(packageName.length()<1 || (title+text).length()<1)
+            return false;
+
+        int count=  NotificationBoxApp.getLiteOrm().query(new QueryBuilder<NotificationInfo>(NotificationInfo.class)
+                .where("packageName = ?", packageName)
+                .whereAppendAnd()
+                .whereAppend("title = ?", title)
+                .whereAppendAnd()
+                .whereAppend("text = ?", text)
+                .orderBy("time desc"))
+                .size();
+        return (count>0);
+    }
+
+    public static List<NotificationInfo> getNotification(String packageName,String qurey1,String qurey2) {
 
 
 

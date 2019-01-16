@@ -149,6 +149,13 @@ public class HciCloudProxy {
     }
 
 
+    public void stop(){
+        list_hciBook.clear();
+        hciBook=null;
+        mTtsPlayer.stop();
+    }
+
+
     public void speak(LinkedList<String[]> list){
         list_hciBook.addAll(list);
 
@@ -288,6 +295,9 @@ public class HciCloudProxy {
             }
         }
     };
+
+
+
 
 
     /**

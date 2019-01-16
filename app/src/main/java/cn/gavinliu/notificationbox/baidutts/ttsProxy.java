@@ -91,6 +91,7 @@ public class ttsProxy {
 
     public void stop() {
         synthesizer.stop();
+        hciCloudProxy.stop();
     }
 
     private int speaker = 0;

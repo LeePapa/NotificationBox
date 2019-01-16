@@ -8,7 +8,7 @@ android {
         applicationId "com.tumuyan.notificationreader"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 9
+        versionCode 10
         versionName "2.6R3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
